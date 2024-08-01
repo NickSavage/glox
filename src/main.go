@@ -7,6 +7,8 @@ import (
 	"log"
 	"os"
 	"strings"
+
+	"github.com/NickSavage/glox/src/tokens"
 )
 
 func report(line int, where string, message string) {
@@ -18,8 +20,17 @@ func printError(line int, message string) {
 }
 
 func run(source string) error {
-	tokens := strings.Split(source, " ")
-	for _, token := range tokens {
+	s := tokens.Scanner{
+		Source: source,
+		Tokens: make([]tokens.Token, 0),
+	}
+	err := s.ScanTokens()
+	if err != nil {
+		log.Fatal(err.Error())
+		return err
+	}
+
+	for _, token := range s.Tokens {
 		fmt.Println(token)
 	}
 	return nil
