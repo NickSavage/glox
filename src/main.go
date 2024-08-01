@@ -13,19 +13,21 @@ func report(line int, where string, message string) {
 
 }
 
-func error(line int, message string) {
+func printError(line int, message string) {
 	report(line, "", message)
 }
 
-func run(source string) {
+func run(source string) error {
 	tokens := strings.Split(source, " ")
 	for _, token := range tokens {
 		fmt.Println(token)
 	}
+	return nil
 }
 
 func runPrompt() {
 	scanner := bufio.NewScanner(os.Stdin)
+	var err error
 	for {
 		print("> ")
 		if !scanner.Scan() {
@@ -40,18 +42,26 @@ func runPrompt() {
 			fmt.Println("Goodbye!")
 			return
 		default:
-			run(input)
+			err = run(input)
+			if err != nil {
+				printError(0, err.Error())
+			}
+
 		}
 	}
 
 }
 
-func runFile(path string) {
+func runFile(path string) error {
 	contents, err := ioutil.ReadFile(path)
 	if err != nil {
 		log.Fatal(err)
 	}
-	run(string(contents))
+	err = run(string(contents))
+	if err != nil {
+		return err
+	}
+	return nil
 
 }
 
