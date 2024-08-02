@@ -104,6 +104,7 @@ func (s *Scanner) parseNumber(start int) (Token, error) {
 		}
 		current++
 	}
+	// TODO: this seems messy and inefficient
 	numberString = s.Source[start : current+1]
 	var i interface{}
 	var err error
@@ -210,6 +211,19 @@ func (s *Scanner) ScanTokens() error {
 				s.current++
 			} else {
 				s.Tokens = append(s.Tokens, GreaterToken(s.line))
+			}
+		case '/':
+			if s.next(s.current) == '/' {
+				// this is a comment, we want to ignore
+				for {
+					s.current++
+					if s.next(s.current) == '\n' {
+						break
+					}
+				}
+
+			} else {
+				s.Tokens = append(s.Tokens, SlashToken(s.line))
 			}
 		case ' ':
 		case '\r':

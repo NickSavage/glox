@@ -108,6 +108,15 @@ func StarToken(line int) Token {
 	}
 }
 
+func SlashToken(line int) Token {
+	return Token{
+		Type:    TokenType{Type: "Slash"},
+		Lexeme:  "/",
+		Literal: nil,
+		Line:    line,
+	}
+}
+
 func BangToken(line int) Token {
 	return Token{
 		Type:    TokenType{Type: "Bang"},

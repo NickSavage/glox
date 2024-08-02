@@ -155,3 +155,22 @@ func TestParseKeywordIdentifier(t *testing.T) {
 		t.Errorf("wrong result, got %v want %v", s.Tokens[0].Lexeme, "and")
 	}
 }
+
+func TestParseComment(t *testing.T) {
+	text := "//test\nand"
+	s := makeScanner(text)
+	err := s.ScanTokens()
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	if len(s.Tokens) != 2 {
+		t.Errorf("wrong number of tokens returned. got %v want %v", len(s.Tokens), 2)
+	}
+	if s.Tokens[0].Type.Type != "And" {
+		t.Errorf("wrong token type, got %v want Identifier", s.Tokens[0].Type)
+	}
+	if s.Tokens[0].Lexeme != "and" {
+		t.Errorf("wrong result, got %v want %v", s.Tokens[0].Lexeme, "and")
+	}
+
+}
