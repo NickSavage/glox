@@ -36,7 +36,7 @@ func TestPrettyPrintExpressionTree(t *testing.T) {
 		},
 		Type: "Binary",
 	}
-	output := prettyPrintExpressionTree(input)
+	output := prettyPrintExpressionTree(input, "")
 	if expectedOutput != output {
 		log.Fatalf("output of prettyPrintExpressionTree not correct, got %v want %v", output, expectedOutput)
 	}
