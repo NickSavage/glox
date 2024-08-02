@@ -2,8 +2,29 @@ package tokens
 
 import (
 	"errors"
+	"fmt"
 	"log"
+	"strconv"
 )
+
+var keywords = map[string]TokenType{
+	"and":    TokenType{Type: "And"},
+	"class":  TokenType{Type: "Class"},
+	"else":   TokenType{Type: "Else"},
+	"false":  TokenType{Type: "False"},
+	"for":    TokenType{Type: "For"},
+	"fun":    TokenType{Type: "Fun"},
+	"if":     TokenType{Type: "If"},
+	"nil":    TokenType{Type: "Nil"},
+	"or":     TokenType{Type: "Or"},
+	"print":  TokenType{Type: "Print"},
+	"return": TokenType{Type: "Return"},
+	"super":  TokenType{Type: "Super"},
+	"this":   TokenType{Type: "This"},
+	"true":   TokenType{Type: "True"},
+	"var":    TokenType{Type: "Var"},
+	"while":  TokenType{Type: "While"},
+}
 
 type Scanner struct {
 	Source  string
@@ -11,6 +32,21 @@ type Scanner struct {
 	line    int
 	current int
 	start   int
+}
+
+func isDigit(char rune) bool {
+	return char >= '0' && char <= '9'
+}
+
+func isAlpha(char rune) bool {
+	return (char >= 'a' && char <= 'z') ||
+		(char >= 'A' && char <= 'Z') ||
+		char == '_'
+
+}
+
+func isAlphaNumeric(char rune) bool {
+	return isDigit(char) || isAlpha(char)
 }
 
 func (s *Scanner) next(current int) rune {
@@ -40,6 +76,73 @@ func (s *Scanner) parseString(start int) (Token, error) {
 	}
 	return Token{
 		Type:    TokenType{Type: "String"},
+		Lexeme:  result,
+		Literal: nil,
+		Line:    s.line,
+	}, nil
+
+}
+
+func (s *Scanner) parseNumber(start int) (Token, error) {
+	var numberString string
+	double := false
+
+	current := start
+	for {
+		next := s.next(current)
+		if !isDigit(next) && !(next == '.') {
+			break
+		}
+		if next == '.' {
+			double = true
+		}
+		if next == 0 {
+			break
+		}
+		if next == '\n' {
+			break
+		}
+		current++
+	}
+	numberString = s.Source[start : current+1]
+	var i interface{}
+	var err error
+	if double {
+		i, err = strconv.ParseFloat(numberString, 64)
+	} else {
+		i, err = strconv.Atoi(numberString)
+
+	}
+	if err != nil {
+		fmt.Println(err)
+		return Token{}, err
+	}
+	return Token{
+		Type:    TokenType{Type: "Number"},
+		Lexeme:  numberString,
+		Literal: i,
+		Line:    s.line,
+	}, nil
+}
+
+func (s *Scanner) parseIdentifier(start int) (Token, error) {
+
+	var result string
+	current := start
+	for {
+		next := s.next(current)
+		if !isAlphaNumeric(next) {
+			break
+		}
+		current++
+	}
+	result = s.Source[start : current+1]
+	tokenType := keywords[result]
+	if tokenType.Type == "" {
+		tokenType = TokenType{Type: "Identifier"}
+	}
+	return Token{
+		Type:    tokenType,
 		Lexeme:  result,
 		Literal: nil,
 		Line:    s.line,
@@ -130,8 +233,26 @@ func (s *Scanner) ScanTokens() error {
 			s.current += len(token.Lexeme)
 
 		default:
-			log.Fatal("Unexpected character")
-			return errors.New("Unexpected character")
+			if isDigit(c) {
+				token, err := s.parseNumber(s.current)
+				if err != nil {
+					return err
+				}
+				s.Tokens = append(s.Tokens, token)
+				s.current += len(token.Lexeme)
+			} else if isAlpha(c) {
+				token, err := s.parseIdentifier(s.current)
+				if err != nil {
+					return err
+				}
+				s.Tokens = append(s.Tokens, token)
+				s.current += len(token.Lexeme)
+
+			} else {
+				log.Fatal("Unexpected character")
+				return errors.New("Unexpected character")
+
+			}
 		}
 
 		// is at end
