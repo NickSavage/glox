@@ -8,6 +8,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/NickSavage/glox/src/parser"
 	"github.com/NickSavage/glox/src/tokens"
 )
 
@@ -33,6 +34,18 @@ func run(source string) error {
 	for _, token := range s.Tokens {
 		fmt.Println(token)
 	}
+	p := parser.Parser{
+		Tokens:  s.Tokens,
+		Current: 0,
+	}
+	expr, err := p.Parse()
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	print("expression: ")
+	print(parser.PrettyPrintExpressionTree(expr, ""))
+	print("\n")
+
 	return nil
 }
 

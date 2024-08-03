@@ -253,14 +253,14 @@ func (s *Scanner) ScanTokens() error {
 					return err
 				}
 				s.Tokens = append(s.Tokens, token)
-				s.current += len(token.Lexeme)
+				s.current += len(token.Lexeme) - 1
 			} else if isAlpha(c) {
 				token, err := s.parseIdentifier(s.current)
 				if err != nil {
 					return err
 				}
 				s.Tokens = append(s.Tokens, token)
-				s.current += len(token.Lexeme)
+				s.current += len(token.Lexeme) - 1
 
 			} else {
 				log.Fatal("Unexpected character")
@@ -270,12 +270,10 @@ func (s *Scanner) ScanTokens() error {
 		}
 
 		// is at end
-		s.current++
-		//log.Printf("current %v %v", s.current, s.Tokens)
-		if s.current >= len(s.Source) {
-
+		if s.next(s.current) == 0 {
 			break
 		}
+		s.current++
 	}
 	s.Tokens = append(s.Tokens, EOFToken(s.line))
 

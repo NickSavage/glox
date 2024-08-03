@@ -36,7 +36,7 @@ func TestPrettyPrintExpressionTree(t *testing.T) {
 		},
 		Type: "Binary",
 	}
-	output := prettyPrintExpressionTree(input, "")
+	output := PrettyPrintExpressionTree(input, "")
 	if expectedOutput != output {
 		log.Fatalf("output of prettyPrintExpressionTree not correct, got %v want %v", output, expectedOutput)
 	}
@@ -144,4 +144,187 @@ func TestParserPrimaryNumberString(t *testing.T) {
 	if !(expr.Value.Type.Type == "String") {
 		t.Errorf("unexpected expression, got %v want Number", expr.Value.Type.Type)
 	}
+}
+
+func TestParserUnary(t *testing.T) {
+	p, err := makeParser("!1 -123")
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	expr, err := p.Unary()
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	log.Printf("expr %v", expr)
+	if expr.Type != "Unary" {
+		t.Errorf("unexpected expression, got %v want Unary", expr.Type)
+	}
+	if !(expr.Operator.Type.Type == "Bang") {
+		t.Errorf("unexpected operator, got %v want Bang", expr.Operator.Type.Type)
+	}
+	if !(expr.Right.Type == "Literal") {
+		t.Errorf("unexpected expression, got %v want Number", expr.Value.Type.Type)
+	}
+	if !(expr.Right.Value.Literal == 1) {
+		t.Errorf("unexpected expression, got %v want 1", expr.Right.Value.Literal)
+	}
+
+	expr, err = p.Unary()
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	if expr.Type != "Unary" {
+		t.Errorf("unexpected expression, got %v want Unary", expr.Type)
+	}
+	if !(expr.Operator.Type.Type == "Minus") {
+		t.Errorf("unexpected operator, got %v want Minus", expr.Operator.Type.Type)
+	}
+	if !(expr.Right.Type == "Literal") {
+		t.Errorf("unexpected expression, got %v want Number", expr.Value.Type.Type)
+	}
+	if !(expr.Right.Value.Literal == 123) {
+		t.Errorf("unexpected expression, got %v want 123", expr.Right.Value.Literal)
+	}
+}
+func TestParserFactor(t *testing.T) {
+	p, err := makeParser("1 / 2")
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	expr, err := p.Factor()
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	log.Printf("expr %v", expr)
+	if expr.Type != "Binary" {
+		t.Errorf("unexpected expression, got %v want Unary", expr.Type)
+	}
+	if !(expr.Operator.Type.Type == "Slash") {
+		t.Errorf("unexpected operator, got %v want Slash", expr.Operator.Type.Type)
+	}
+	if !(expr.Right.Type == "Literal") {
+		t.Errorf("unexpected expression, got %v want Number", expr.Value.Type.Type)
+	}
+	if !(expr.Right.Value.Literal == 2) {
+		t.Errorf("unexpected expression, got %v want 2", expr.Right.Value.Literal)
+	}
+	if !(expr.Right.Type == "Literal") {
+		t.Errorf("unexpected expression, got %v want Number", expr.Value.Type.Type)
+	}
+	if !(expr.Left.Value.Literal == 1) {
+		t.Errorf("unexpected expression, got %v want 1", expr.Right.Value.Literal)
+	}
+}
+
+func TestParserTerm(t *testing.T) {
+	p, err := makeParser("1 + 2")
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	expr, err := p.Term()
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	log.Printf("expr %v", expr)
+	if expr.Type != "Binary" {
+		t.Errorf("unexpected expression, got %v want Unary", expr.Type)
+	}
+	if !(expr.Operator.Type.Type == "Plus") {
+		t.Errorf("unexpected operator, got %v want Slash", expr.Operator.Type.Type)
+	}
+	if !(expr.Right.Type == "Literal") {
+		t.Errorf("unexpected expression, got %v want Number", expr.Value.Type.Type)
+	}
+	if !(expr.Right.Value.Literal == 2) {
+		t.Errorf("unexpected expression, got %v want 2", expr.Right.Value.Literal)
+	}
+	if !(expr.Right.Type == "Literal") {
+		t.Errorf("unexpected expression, got %v want Number", expr.Value.Type.Type)
+	}
+	if !(expr.Left.Value.Literal == 1) {
+		t.Errorf("unexpected expression, got %v want 1", expr.Right.Value.Literal)
+	}
+}
+func TestParserComparison(t *testing.T) {
+	p, err := makeParser("1 > 2")
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	expr, err := p.Comparison()
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	log.Printf("expr %v", expr)
+	if expr.Type != "Binary" {
+		t.Errorf("unexpected expression, got %v want Unary", expr.Type)
+	}
+	if !(expr.Operator.Type.Type == "Greater") {
+		t.Errorf("unexpected operator, got %v want Greater", expr.Operator.Type.Type)
+	}
+	if !(expr.Right.Type == "Literal") {
+		t.Errorf("unexpected expression, got %v want Number", expr.Value.Type.Type)
+	}
+	if !(expr.Right.Value.Literal == 2) {
+		t.Errorf("unexpected expression, got %v want 2", expr.Right.Value.Literal)
+	}
+	if !(expr.Right.Type == "Literal") {
+		t.Errorf("unexpected expression, got %v want Number", expr.Value.Type.Type)
+	}
+	if !(expr.Left.Value.Literal == 1) {
+		t.Errorf("unexpected expression, got %v want 1", expr.Right.Value.Literal)
+	}
+}
+
+func TestParserEquality(t *testing.T) {
+	p, err := makeParser("1 == 2")
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	expr, err := p.Equality()
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	log.Printf("expr %v", expr)
+	if expr.Type != "Binary" {
+		t.Errorf("unexpected expression, got %v want Unary", expr.Type)
+	}
+	if !(expr.Operator.Type.Type == "EqualEqual") {
+		t.Errorf("unexpected operator, got %v want EqualEqual", expr.Operator.Type.Type)
+	}
+	if !(expr.Right.Type == "Literal") {
+		t.Errorf("unexpected expression, got %v want Number", expr.Value.Type.Type)
+	}
+	if !(expr.Right.Value.Literal == 2) {
+		t.Errorf("unexpected expression, got %v want 2", expr.Right.Value.Literal)
+	}
+	if !(expr.Right.Type == "Literal") {
+		t.Errorf("unexpected expression, got %v want Number", expr.Value.Type.Type)
+	}
+	if !(expr.Left.Value.Literal == 1) {
+		t.Errorf("unexpected expression, got %v want 1", expr.Right.Value.Literal)
+	}
+}
+
+func TestParserExpression(t *testing.T) {
+	p, err := makeParser("(1 + 2) != (3 + 4)")
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	expr, err := p.Expression()
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	if expr.Type != "Binary" {
+		t.Errorf("unexpected expression, got %v want Binary", expr.Type)
+	}
+	if !(expr.Operator.Type.Type == "BangEqual") {
+		t.Errorf("unexpected operator, got %v want BangEqual", expr.Operator.Type.Type)
+	}
+	if expr.Left.Expression.Type != "Binary" {
+		t.Errorf("unexpected left expression type, got %v want Grouping", expr.Left.Expression.Type)
+	}
+	if expr.Left.Expression.Operator.Type.Type != "Plus" {
+		t.Errorf("unexpected left expression operator, got %v want Plus", expr.Left.Expression.Operator.Type.Type)
+	}
+
 }

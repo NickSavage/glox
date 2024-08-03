@@ -174,3 +174,15 @@ func TestParseComment(t *testing.T) {
 	}
 
 }
+
+func TestScanGroup(t *testing.T) {
+	text := "(1 + 1)"
+	s := makeScanner(text)
+	err := s.ScanTokens()
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	if len(s.Tokens) != 6 {
+		t.Errorf("wrong number of tokens returned. got %v want %v", len(s.Tokens), 6)
+	}
+}
