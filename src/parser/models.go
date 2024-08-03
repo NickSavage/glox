@@ -10,3 +10,8 @@ type Expression struct {
 	Value      tokens.Token
 	Type       string // "binary, unary, literal, grouping"
 }
+
+type Parser struct {
+	Tokens  []tokens.Token
+	Current int
+}
