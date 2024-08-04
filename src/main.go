@@ -8,6 +8,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/NickSavage/glox/src/interpreter"
 	"github.com/NickSavage/glox/src/parser"
 	"github.com/NickSavage/glox/src/tokens"
 )
@@ -45,6 +46,18 @@ func run(source string) error {
 	print("expression: ")
 	print(parser.PrettyPrintExpressionTree(expr, ""))
 	print("\n")
+
+	i := interpreter.Interpreter{
+		Expression: expr,
+	}
+	result, err := i.Evaluate(expr)
+	if err != nil {
+		log.Fatal(err.Error())
+	} else {
+		log.Printf("%v", result)
+		print("%v", result)
+
+	}
 
 	return nil
 }
