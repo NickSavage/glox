@@ -41,7 +41,8 @@ func run(source string) error {
 	}
 	expr, err := p.Parse()
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Print(err.Error())
+		return err
 	}
 	print("expression: ")
 	print(parser.PrettyPrintExpressionTree(expr, ""))
@@ -50,9 +51,11 @@ func run(source string) error {
 	i := interpreter.Interpreter{
 		Expression: expr,
 	}
-	result, err := i.Evaluate(expr)
-	if err != nil {
-		log.Fatal(err.Error())
+
+	result, rerr := i.Evaluate(expr)
+	if rerr.HasError {
+		log.Printf("? %v", rerr.Message.Error())
+		return rerr.Message
 	} else {
 		log.Printf("%v", result)
 		print("%v", result)

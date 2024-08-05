@@ -29,8 +29,8 @@ func TestInterpretLiteral(t *testing.T) {
 	text := "1"
 	i, _ := parseSource(t, text)
 	result, err := i.evaluateLiteral(i.Expression)
-	if err != nil {
-		t.Errorf(err.Error())
+	if err.HasError {
+		t.Errorf(err.Message.Error())
 	}
 	if _, ok := result.(int); !ok {
 		t.Errorf("expected int, got %T", result)
@@ -45,8 +45,8 @@ func TestInterpretGrouping(t *testing.T) {
 	text := "(1 + 1) + (4 / 2)"
 	i, _ := parseSource(t, text)
 	result, err := i.Evaluate(i.Expression)
-	if err != nil {
-		t.Errorf(err.Error())
+	if err.HasError {
+		t.Errorf(err.Message.Error())
 	}
 	if _, ok := result.(int); !ok {
 		t.Errorf("expected int, got %T", result)
@@ -55,4 +55,61 @@ func TestInterpretGrouping(t *testing.T) {
 		t.Errorf("incorrect result, got %v want %v", result, 4)
 	}
 
+}
+
+func TestInterpretComparison(t *testing.T) {
+	text := "(1 + 1) > (4 / 2)"
+	i, _ := parseSource(t, text)
+	result, err := i.Evaluate(i.Expression)
+	if err.HasError {
+		t.Errorf(err.Message.Error())
+	}
+	if _, ok := result.(bool); !ok {
+		t.Errorf("expected bool, got %T", result)
+	}
+	if result != false {
+		t.Errorf("incorrect result, got %v want %v", result, false)
+	}
+}
+
+func TestInterpretEquality(t *testing.T) {
+	text := "(1 + 1) == (6 / 2)"
+	i, _ := parseSource(t, text)
+	result, err := i.Evaluate(i.Expression)
+	if err.HasError {
+		t.Errorf(err.Message.Error())
+	}
+	if _, ok := result.(bool); !ok {
+		t.Errorf("expected bool, got %T", result)
+	}
+	if result != false {
+		t.Errorf("incorrect result, got %v want %v", result, false)
+	}
+}
+
+func TestInterpretNotEquality(t *testing.T) {
+	text := "(1 + 1) != (2 / 2)"
+	i, _ := parseSource(t, text)
+	result, err := i.Evaluate(i.Expression)
+	if err.HasError {
+		t.Errorf(err.Message.Error())
+	}
+	if _, ok := result.(bool); !ok {
+		t.Errorf("expected bool, got %T", result)
+	}
+	if result != true {
+		t.Errorf("incorrect result, got %v want %v", result, true)
+	}
+}
+
+func TestInterpretDivideZeroEquality(t *testing.T) {
+	text := "(0 / 0) != (0 / 0)"
+	i, _ := parseSource(t, text)
+	result, err := i.Evaluate(i.Expression)
+	if !err.HasError {
+		t.Errorf(err.Message.Error())
+	}
+	if result != nil {
+		t.Errorf("result should have been null after error")
+	}
 }
