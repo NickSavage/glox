@@ -77,7 +77,7 @@ func (s *Scanner) parseString(start int) (Token, error) {
 	return Token{
 		Type:    TokenType{Type: "String"},
 		Lexeme:  result,
-		Literal: nil,
+		Literal: result,
 		Line:    s.line,
 	}, nil
 
