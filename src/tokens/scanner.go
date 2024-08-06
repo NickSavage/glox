@@ -237,14 +237,14 @@ func (s *Scanner) ScanTokens() error {
 				return err
 			}
 			s.Tokens = append(s.Tokens, token)
-			s.current += len(token.Lexeme)
+			s.current += len(token.Lexeme) - 1
 		case '\'':
 			token, err := s.parseString(s.current)
 			if err != nil {
 				return err
 			}
 			s.Tokens = append(s.Tokens, token)
-			s.current += len(token.Lexeme)
+			s.current += len(token.Lexeme) - 1
 
 		default:
 			if isDigit(c) {

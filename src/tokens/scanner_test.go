@@ -25,14 +25,14 @@ func TestScanTokens(t *testing.T) {
 
 func TestScanSingleQuoteStrings(t *testing.T) {
 
-	text := "'hello world'"
+	text := "'hello world';"
 	s := makeScanner(text)
 	err := s.ScanTokens()
 	if err != nil {
 		t.Errorf(err.Error())
 	}
-	if len(s.Tokens) != 2 {
-		t.Errorf("wrong number of tokens returned. got %v want %v", len(s.Tokens), 2)
+	if len(s.Tokens) != 3 {
+		t.Errorf("wrong number of tokens returned. got %v want %v", len(s.Tokens), 3)
 	}
 	if s.Tokens[0].Lexeme != "'hello world'" {
 		t.Errorf("wrong result, got %v want %v", s.Tokens[0].Lexeme, "'hello world'")
@@ -41,14 +41,14 @@ func TestScanSingleQuoteStrings(t *testing.T) {
 }
 
 func TestScanDoubleQuoteStrings(t *testing.T) {
-	text := "\"hello world\""
+	text := "\"hello world\";"
 	s := makeScanner(text)
 	err := s.ScanTokens()
 	if err != nil {
 		t.Errorf(err.Error())
 	}
-	if len(s.Tokens) != 2 {
-		t.Errorf("wrong number of tokens returned. got %v want %v", len(s.Tokens), 2)
+	if len(s.Tokens) != 3 {
+		t.Errorf("wrong number of tokens returned. got %v want %v", len(s.Tokens), 3)
 	}
 	if s.Tokens[0].Lexeme != "\"hello world\"" {
 		t.Errorf("wrong result, got %v want %v", s.Tokens[0].Lexeme, "\"hello world\"")
