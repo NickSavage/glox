@@ -49,15 +49,7 @@ func run(source string) error {
 			Expression: statement.Expression,
 		}
 
-		result, rerr := i.Evaluate(statement.Expression)
-		if rerr.HasError {
-			log.Printf("? %v", rerr.Message.Error())
-			return rerr.Message
-		} else {
-			log.Printf("%v", result)
-			print("%v", result)
-
-		}
+		err = i.Execute(statement)
 
 	}
 

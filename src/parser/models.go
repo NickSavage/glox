@@ -3,6 +3,7 @@ package parser
 import "github.com/NickSavage/glox/src/tokens"
 
 type Statement struct {
+	Type       tokens.TokenType
 	Expression *Expression
 }
 

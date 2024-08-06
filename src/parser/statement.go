@@ -20,6 +20,7 @@ func (p *Parser) PrintStatement() (*Statement, error) {
 		return &Statement{}, errors.New("expecting ';' after expression")
 	}
 	return &Statement{
+		Type:       tokens.TokenType{Type: "Print"},
 		Expression: expr,
 	}, err
 }

@@ -3,12 +3,41 @@ package interpreter
 import (
 	"errors"
 	"fmt"
+	"log"
 
 	"github.com/NickSavage/glox/src/parser"
 	"github.com/NickSavage/glox/src/tokens"
 )
 
+func (i *Interpreter) executePrint(text interface{}) error {
+	log.Printf("? %v", text)
+	print(fmt.Sprintf("%v", text))
+	print("\n")
+	return nil
+}
+
+func (i *Interpreter) Execute(statement *parser.Statement) error {
+	result, rerr := i.Evaluate(statement.Expression)
+	if rerr.HasError {
+		log.Printf("? %v", rerr.Message.Error())
+		return rerr.Message
+	}
+	switch statement.Type.Type {
+	case "Print":
+		log.Printf("booga")
+		switch v := result.(type) {
+		case string:
+			return i.executePrint(result)
+		default:
+			return i.executePrint(fmt.Sprintf("%v", v))
+		}
+	}
+
+	return nil
+}
+
 func (i *Interpreter) Evaluate(expr *parser.Expression) (interface{}, RuntimeError) {
+	log.Printf("expression type %v", expr.Type)
 	switch expr.Type {
 	case "Literal":
 		return i.evaluateLiteral(expr)
@@ -32,6 +61,7 @@ func (i *Interpreter) evaluateGrouping(expr *parser.Expression) (interface{}, Ru
 }
 
 func (i *Interpreter) evaluateLiteral(expr *parser.Expression) (interface{}, RuntimeError) {
+	log.Printf("literal?")
 	if expr.Type != "Literal" {
 		return nil, RuntimeError{
 			Message:  fmt.Errorf("tried to evaluate a %v as a literal", expr.Type),
