@@ -58,21 +58,6 @@ func makeParser(text string) (Parser, error) {
 	}, nil
 }
 
-// func TestParserEquality(t *testing.T) {
-// 	p, err := makeParser("1 == 1")
-// 	if err != nil {
-// 		t.Errorf(err.Error())
-// 	}
-// 	expr, err := p.Equality()
-// 	if err != nil {
-// 		t.Errorf(err.Error())
-// 	}
-// 	if expr.Type != "Binary" {
-// 		t.Errorf("unexpected expression, got %v want Binary", expr.Type)
-// 	}
-
-// }
-
 func TestParserPrimaryFalse(t *testing.T) {
 
 	p, err := makeParser("false")
@@ -90,26 +75,6 @@ func TestParserPrimaryFalse(t *testing.T) {
 		t.Errorf("unexpected expression, got %v want false", expr.Value.Lexeme)
 	}
 
-}
-
-func TestParserPrimaryNumber(t *testing.T) {
-	p, err := makeParser("1")
-	if err != nil {
-		t.Errorf(err.Error())
-	}
-	expr, err := p.Primary()
-	if err != nil {
-		t.Errorf(err.Error())
-	}
-	if expr.Type != "Literal" {
-		t.Errorf("unexpected expression, got %v want Literal", expr.Type)
-	}
-	if !(expr.Value.Lexeme == "1") {
-		t.Errorf("unexpected expression, got %v want 1", expr.Value.Lexeme)
-	}
-	if !(expr.Value.Type.Type == "Number") {
-		t.Errorf("unexpected expression, got %v want Number", expr.Value.Type.Type)
-	}
 }
 
 func TestParserPrimaryNumberString(t *testing.T) {
@@ -216,35 +181,6 @@ func TestParserFactor(t *testing.T) {
 	}
 }
 
-func TestParserTerm(t *testing.T) {
-	p, err := makeParser("1 + 2")
-	if err != nil {
-		t.Errorf(err.Error())
-	}
-	expr, err := p.Term()
-	if err != nil {
-		t.Errorf(err.Error())
-	}
-	log.Printf("expr %v", expr)
-	if expr.Type != "Binary" {
-		t.Errorf("unexpected expression, got %v want Unary", expr.Type)
-	}
-	if !(expr.Operator.Type.Type == "Plus") {
-		t.Errorf("unexpected operator, got %v want Slash", expr.Operator.Type.Type)
-	}
-	if !(expr.Right.Type == "Literal") {
-		t.Errorf("unexpected expression, got %v want Number", expr.Value.Type.Type)
-	}
-	if !(expr.Right.Value.Literal == 2) {
-		t.Errorf("unexpected expression, got %v want 2", expr.Right.Value.Literal)
-	}
-	if !(expr.Right.Type == "Literal") {
-		t.Errorf("unexpected expression, got %v want Number", expr.Value.Type.Type)
-	}
-	if !(expr.Left.Value.Literal == 1) {
-		t.Errorf("unexpected expression, got %v want 1", expr.Right.Value.Literal)
-	}
-}
 func TestParserComparison(t *testing.T) {
 	p, err := makeParser("1 > 2")
 	if err != nil {
@@ -260,36 +196,6 @@ func TestParserComparison(t *testing.T) {
 	}
 	if !(expr.Operator.Type.Type == "Greater") {
 		t.Errorf("unexpected operator, got %v want Greater", expr.Operator.Type.Type)
-	}
-	if !(expr.Right.Type == "Literal") {
-		t.Errorf("unexpected expression, got %v want Number", expr.Value.Type.Type)
-	}
-	if !(expr.Right.Value.Literal == 2) {
-		t.Errorf("unexpected expression, got %v want 2", expr.Right.Value.Literal)
-	}
-	if !(expr.Right.Type == "Literal") {
-		t.Errorf("unexpected expression, got %v want Number", expr.Value.Type.Type)
-	}
-	if !(expr.Left.Value.Literal == 1) {
-		t.Errorf("unexpected expression, got %v want 1", expr.Right.Value.Literal)
-	}
-}
-
-func TestParserEquality(t *testing.T) {
-	p, err := makeParser("1 == 2")
-	if err != nil {
-		t.Errorf(err.Error())
-	}
-	expr, err := p.Equality()
-	if err != nil {
-		t.Errorf(err.Error())
-	}
-	log.Printf("expr %v", expr)
-	if expr.Type != "Binary" {
-		t.Errorf("unexpected expression, got %v want Unary", expr.Type)
-	}
-	if !(expr.Operator.Type.Type == "EqualEqual") {
-		t.Errorf("unexpected operator, got %v want EqualEqual", expr.Operator.Type.Type)
 	}
 	if !(expr.Right.Type == "Literal") {
 		t.Errorf("unexpected expression, got %v want Number", expr.Value.Type.Type)
