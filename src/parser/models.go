@@ -2,6 +2,10 @@ package parser
 
 import "github.com/NickSavage/glox/src/tokens"
 
+type Statement struct {
+	Expression *Expression
+}
+
 type Expression struct {
 	Expression *Expression
 	Left       *Expression

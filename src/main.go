@@ -39,26 +39,25 @@ func run(source string) error {
 		Tokens:  s.Tokens,
 		Current: 0,
 	}
-	expr, err := p.Parse()
+	statements, err := p.Parse()
 	if err != nil {
 		log.Print(err.Error())
 		return err
 	}
-	print("expression: ")
-	print(parser.PrettyPrintExpressionTree(expr, ""))
-	print("\n")
+	for _, statement := range statements {
+		i := interpreter.Interpreter{
+			Expression: statement.Expression,
+		}
 
-	i := interpreter.Interpreter{
-		Expression: expr,
-	}
+		result, rerr := i.Evaluate(statement.Expression)
+		if rerr.HasError {
+			log.Printf("? %v", rerr.Message.Error())
+			return rerr.Message
+		} else {
+			log.Printf("%v", result)
+			print("%v", result)
 
-	result, rerr := i.Evaluate(expr)
-	if rerr.HasError {
-		log.Printf("? %v", rerr.Message.Error())
-		return rerr.Message
-	} else {
-		log.Printf("%v", result)
-		print("%v", result)
+		}
 
 	}
 

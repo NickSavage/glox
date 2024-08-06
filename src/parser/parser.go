@@ -41,15 +41,6 @@ func (p *Parser) match(tokenType tokens.TokenType) bool {
 
 }
 
-// func (p *Parser) Equality() {
-// 	var expr Expression
-
-// 	if p.match(tokens.EqualEqualToken().Type) {
-
-// 	}
-
-// }
-
 func LiteralExpression(token tokens.Token) *Expression {
 	return &Expression{Value: token, Type: "Literal"}
 }
@@ -212,6 +203,16 @@ func (p *Parser) Primary() (*Expression, error) {
 
 }
 
-func (p *Parser) Parse() (*Expression, error) {
-	return p.Expression()
+func (p *Parser) Parse() ([]*Statement, error) {
+	statements := make([]*Statement, 0)
+	for {
+		statement, _ := p.Statement()
+		log.Printf("%v", statement)
+		statements = append(statements, statement)
+
+		if p.Tokens[p.Current].Type.Type == "EOF" {
+			break
+		}
+	}
+	return statements, nil
 }

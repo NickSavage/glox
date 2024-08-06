@@ -18,7 +18,7 @@ func parseSource(t *testing.T, text string) (Interpreter, error) {
 		return Interpreter{}, nil
 	}
 	p := parser.Parser{Tokens: s.Tokens, Current: 0}
-	expr, _ := p.Parse()
+	expr, _ := p.Expression()
 	i := Interpreter{
 		Expression: expr,
 	}
