@@ -21,6 +21,7 @@ func parseSource(t *testing.T, text string) (Interpreter, error) {
 	expr, _ := p.Expression()
 	i := Interpreter{
 		Expression: expr,
+		Memory:     make(map[string]interface{}),
 	}
 	return i, nil
 }
@@ -112,4 +113,18 @@ func TestInterpretDivideZeroEquality(t *testing.T) {
 	if result != nil {
 		t.Errorf("result should have been null after error")
 	}
+}
+
+func TestPutGetMemoryData(t *testing.T) {
+	text := "'hello world';"
+	i, _ := parseSource(t, text)
+	i.Put("hello", "world")
+	result, err := i.Get("hello")
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	if result != "world" {
+		t.Errorf("wrong result, got %v want %v", result, "world")
+	}
+
 }

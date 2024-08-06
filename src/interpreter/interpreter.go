@@ -15,26 +15,36 @@ func (i *Interpreter) executePrint(text interface{}) error {
 	return nil
 }
 
+func (i *Interpreter) executeVariable(statement *parser.Statement) error {
+	log.Printf("statement name %v", statement.VariableName)
+	log.Printf("statement expr %v", statement.Initializer)
+	return nil
+}
+
 func (i *Interpreter) Execute(statement *parser.Statement) error {
-	result, rerr := i.Evaluate(statement.Expression)
-	if rerr.HasError {
-		log.Printf("? %v", rerr.Message.Error())
-		return rerr.Message
-	}
 	switch statement.Type.Type {
 	case "Print":
+		result, rerr := i.Evaluate(statement.Expression)
+		if rerr.HasError {
+			log.Printf("? %v", rerr.Message.Error())
+			return rerr.Message
+		}
 		switch v := result.(type) {
 		case string:
 			return i.executePrint(result)
 		default:
 			return i.executePrint(fmt.Sprintf("%v", v))
 		}
+	case "Variable":
+		return i.executeVariable(statement)
+
 	}
 
 	return nil
 }
 
 func (i *Interpreter) Evaluate(expr *parser.Expression) (interface{}, RuntimeError) {
+	log.Printf("%v type", expr.Type)
 	switch expr.Type {
 	case "Literal":
 		return i.evaluateLiteral(expr)
@@ -44,6 +54,8 @@ func (i *Interpreter) Evaluate(expr *parser.Expression) (interface{}, RuntimeErr
 		return i.evaluateBinary(expr)
 	case "Grouping":
 		return i.evaluateGrouping(expr)
+	case "Identifier":
+		return i.evaluateIdentifier(expr)
 	default:
 		return nil, RuntimeError{
 			Message:  fmt.Errorf("unknown expression type %v", expr.Type),
@@ -51,6 +63,10 @@ func (i *Interpreter) Evaluate(expr *parser.Expression) (interface{}, RuntimeErr
 			Token:    expr.Operator,
 		}
 	}
+}
+
+func (i *Interpreter) evaluateIdentifier(expr *parser.Expression) (interface{}, RuntimeError) {
+	return expr.Value, RuntimeError{}
 }
 
 func (i *Interpreter) evaluateGrouping(expr *parser.Expression) (interface{}, RuntimeError) {

@@ -7,6 +7,7 @@ import (
 
 type Interpreter struct {
 	Expression *parser.Expression
+	Memory     map[string]interface{}
 }
 
 type RuntimeError struct {

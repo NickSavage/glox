@@ -39,17 +39,18 @@ func run(source string) error {
 		Tokens:  s.Tokens,
 		Current: 0,
 	}
-	statements, err := p.Parse()
+	declarations, err := p.Parse()
 	if err != nil {
 		log.Print(err.Error())
 		return err
 	}
-	for _, statement := range statements {
+	for _, declaration := range declarations {
 		i := interpreter.Interpreter{
-			Expression: statement.Expression,
+			Expression: declaration.Expression,
+			Memory:     make(map[string]interface{}),
 		}
 
-		err = i.Execute(statement)
+		err = i.Execute(declaration)
 
 	}
 
