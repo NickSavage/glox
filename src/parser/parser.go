@@ -1,7 +1,7 @@
 package parser
 
 import (
-	"log"
+	//	"log"
 
 	"github.com/NickSavage/glox/src/tokens"
 )
@@ -47,7 +47,6 @@ func (p *Parser) Parse() ([]*Statement, error) {
 		if err != nil {
 			return statements, err
 		}
-		log.Printf("%v", statement)
 		statements = append(statements, statement)
 
 		if p.Tokens[p.Current].Type.Type == "EOF" {

@@ -3,7 +3,7 @@ package parser
 import (
 	"errors"
 	"github.com/NickSavage/glox/src/tokens"
-	"log"
+	//	"log"
 )
 
 func LiteralExpression(token tokens.Token) *Expression {
@@ -122,7 +122,7 @@ func (p *Parser) Unary() (*Expression, error) {
 		result.Operator = p.Tokens[p.Current-1]
 		result.Right, err = p.Unary()
 		result.Type = "Unary"
-		log.Printf("%v", result.Right)
+		//log.Printf("%v", result.Right)
 		if err != nil {
 			return &Expression{}, err
 		}
