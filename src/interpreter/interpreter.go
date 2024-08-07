@@ -22,7 +22,7 @@ func (i *Interpreter) executeVariable(statement *parser.Statement) RuntimeError 
 		return err
 	}
 	log.Printf("evaluate value %v", value)
-	i.Put(statement.VariableName.Lexeme, value)
+	i.Define(statement.VariableName.Lexeme, value)
 	return RuntimeError{HasError: false}
 }
 
@@ -56,7 +56,14 @@ func (i *Interpreter) Execute(statement *parser.Statement) RuntimeError {
 			return rerr
 		}
 		if statement.Expression.Type == "Assignment" {
-			i.Put(statement.Expression.Name.Lexeme, value)
+			err := i.Assign(statement.Expression.Name.Lexeme, value)
+			if err != nil {
+				return RuntimeError{
+					Message:  err,
+					HasError: true,
+					Token:    statement.Expression.Name,
+				}
+			}
 		}
 	}
 

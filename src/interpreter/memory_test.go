@@ -95,3 +95,31 @@ func TestVarInitAssignment(t *testing.T) {
 	}
 
 }
+
+func TestVarAssigmentWithoutInit(t *testing.T) {
+	memory := &Storage{
+		Memory: make(map[string]interface{}),
+	}
+
+	text := "a = 3;"
+	declarations, err := parseDeclarations(t, text)
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	if len(declarations) != 1 {
+		t.Errorf("wrong number of declarations, got %v want %v", len(declarations), 1)
+	}
+	i := Interpreter{
+		Expression: declarations[0].Expression,
+		Memory:     memory,
+	}
+	rerr := i.Execute(declarations[0])
+	if !rerr.HasError {
+		t.Errorf("command succeeded when expecting error")
+	}
+	expectedError := "undefined variable: a"
+	if rerr.Message.Error() != expectedError {
+		t.Errorf("wrong error message, got %v want %v", rerr.Message.Error(), expectedError)
+	}
+
+}
