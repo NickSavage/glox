@@ -123,3 +123,37 @@ func TestVarAssigmentWithoutInit(t *testing.T) {
 	}
 
 }
+
+func TestLocalVarAssigment(t *testing.T) {
+	memory := &Storage{
+		Memory: make(map[string]interface{}),
+	}
+
+	text := " var a = 1;{ var a = 2; a = 3;}"
+	declarations, err := parseDeclarations(t, text)
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	if len(declarations) != 2 {
+		t.Errorf("wrong number of declarations, got %v want %v", len(declarations), 2)
+	}
+	i := Interpreter{
+		Expression: declarations[0].Expression,
+		Memory:     memory,
+	}
+	for _, declaration := range declarations {
+		i.Expression = declaration.Expression
+		rerr := i.Execute(declaration)
+		if rerr.HasError {
+			t.Errorf(err.Error())
+		}
+	}
+	result, err := i.Get("a")
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	if result != 1 {
+		t.Errorf("wrong result, got %v want %v", result, 1)
+	}
+
+}
