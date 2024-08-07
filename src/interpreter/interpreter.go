@@ -21,14 +21,20 @@ func (i *Interpreter) executeVariable(statement *parser.Statement) RuntimeError 
 		log.Printf("err %v", err)
 		return err
 	}
-	log.Printf("evaluate value %v", value)
 	i.Define(statement.VariableName.Lexeme, value)
 	return RuntimeError{HasError: false}
 }
 
 func (i *Interpreter) Execute(statement *parser.Statement) RuntimeError {
-	log.Printf("type %v", statement.Type.Type)
 	switch statement.Type.Type {
+	case "Block":
+		for _, statement := range statement.Statements {
+			log.Printf("statement %v", statement)
+			rerr := i.Execute(statement)
+			if rerr.HasError {
+				return rerr
+			}
+		}
 	case "Print":
 		result, rerr := i.Evaluate(statement.Expression)
 		if rerr.HasError {
@@ -47,7 +53,6 @@ func (i *Interpreter) Execute(statement *parser.Statement) RuntimeError {
 		return i.executeVariable(statement)
 
 	case "Expression":
-		log.Printf("is this where we get")
 		value, rerr := i.Evaluate(statement.Expression)
 
 		if rerr.HasError {
@@ -98,12 +103,15 @@ func (i *Interpreter) Evaluate(expr *parser.Expression) (interface{}, RuntimeErr
 
 func (i *Interpreter) evaluateVariable(expr *parser.Expression) (interface{}, RuntimeError) {
 	result, err := i.Get(expr.Name.Lexeme)
-	log.Printf("result? %v", result)
-	return result, RuntimeError{
-		Message:  err,
-		HasError: false,
-		Token:    expr.Operator,
+	if err != nil {
+		return nil, RuntimeError{
+			Message:  err,
+			HasError: true,
+			Token:    expr.Name,
+		}
 	}
+	log.Printf("result? %v", result)
+	return result, RuntimeError{}
 }
 
 func (i *Interpreter) evaluateIdentifier(expr *parser.Expression) (interface{}, RuntimeError) {

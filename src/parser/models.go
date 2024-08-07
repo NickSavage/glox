@@ -7,6 +7,8 @@ type Statement struct {
 	Expression   *Expression
 	VariableName tokens.Token
 	Initializer  *Expression
+	Statements   []*Statement
+	IsBlock      bool
 }
 
 type Expression struct {

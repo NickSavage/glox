@@ -16,7 +16,7 @@ import (
 var Memory *interpreter.Storage
 
 func report(line int, where string, message string) {
-
+	log.Printf("Error: line %v, token %v: %v", line, where, message)
 }
 
 func printError(line int, message string) {
@@ -46,11 +46,10 @@ func run(source string) error {
 		log.Print(err.Error())
 		return err
 	}
+	i := interpreter.Interpreter{
+		Memory: Memory,
+	}
 	for _, declaration := range declarations {
-		i := interpreter.Interpreter{
-			Expression: declaration.Expression,
-			Memory:     Memory,
-		}
 
 		log.Printf("dec %v", declaration)
 		rerr := i.Execute(declaration)

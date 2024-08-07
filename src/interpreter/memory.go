@@ -2,7 +2,6 @@ package interpreter
 
 import (
 	"fmt"
-	"log"
 )
 
 func (i *Interpreter) Assign(key string, value interface{}) error {
