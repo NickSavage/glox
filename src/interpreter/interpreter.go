@@ -9,25 +9,24 @@ import (
 	"github.com/NickSavage/glox/src/tokens"
 )
 
-func (i *Interpreter) executePrint(text interface{}) error {
+func (i *Interpreter) executePrint(text interface{}) RuntimeError {
 	print(fmt.Sprintf("%v", text))
 	print("\n")
-	return nil
+	return RuntimeError{}
 }
 
-func (i *Interpreter) executeVariable(statement *parser.Statement) error {
-	log.Printf("statement name %v", statement.VariableName)
-	log.Printf("statement expr %v", statement.Initializer)
-	return nil
+func (i *Interpreter) executeVariable(statement *parser.Statement) RuntimeError {
+	i.Put(statement.VariableName.Lexeme, statement.Initializer.Value)
+	return RuntimeError{}
 }
 
-func (i *Interpreter) Execute(statement *parser.Statement) error {
+func (i *Interpreter) Execute(statement *parser.Statement) RuntimeError {
 	switch statement.Type.Type {
 	case "Print":
 		result, rerr := i.Evaluate(statement.Expression)
 		if rerr.HasError {
 			log.Printf("? %v", rerr.Message.Error())
-			return rerr.Message
+			return rerr
 		}
 		switch v := result.(type) {
 		case string:
@@ -40,7 +39,7 @@ func (i *Interpreter) Execute(statement *parser.Statement) error {
 
 	}
 
-	return nil
+	return RuntimeError{}
 }
 
 func (i *Interpreter) Evaluate(expr *parser.Expression) (interface{}, RuntimeError) {

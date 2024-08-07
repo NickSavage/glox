@@ -7,11 +7,15 @@ import (
 
 type Interpreter struct {
 	Expression *parser.Expression
-	Memory     map[string]interface{}
+	Memory     *Storage
 }
 
 type RuntimeError struct {
 	Message  error
 	HasError bool
 	Token    tokens.Token
+}
+
+type Storage struct {
+	Memory map[string]interface{}
 }

@@ -1,10 +1,18 @@
 package interpreter
 
+import (
+	"fmt"
+)
+
 func (i *Interpreter) Put(key string, value interface{}) error {
-	i.Memory[key] = value
+	i.Memory.Memory[key] = value
 	return nil
 }
 
 func (i *Interpreter) Get(key string) (interface{}, error) {
-	return i.Memory[key], nil
+	value, ok := i.Memory.Memory[key]
+	if !ok {
+		return nil, fmt.Errorf("undefined variable: %s", key)
+	}
+	return value, nil
 }

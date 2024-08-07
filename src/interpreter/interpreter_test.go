@@ -8,6 +8,9 @@ import (
 )
 
 func parseSource(t *testing.T, text string) (Interpreter, error) {
+	memory := &Storage{
+		Memory: make(map[string]interface{}),
+	}
 	s := tokens.Scanner{
 		Source: text,
 		Tokens: make([]tokens.Token, 0),
@@ -21,7 +24,7 @@ func parseSource(t *testing.T, text string) (Interpreter, error) {
 	expr, _ := p.Expression()
 	i := Interpreter{
 		Expression: expr,
-		Memory:     make(map[string]interface{}),
+		Memory:     memory,
 	}
 	return i, nil
 }

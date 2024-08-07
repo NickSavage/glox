@@ -13,6 +13,8 @@ import (
 	"github.com/NickSavage/glox/src/tokens"
 )
 
+var Memory *interpreter.Storage
+
 func report(line int, where string, message string) {
 
 }
@@ -47,10 +49,13 @@ func run(source string) error {
 	for _, declaration := range declarations {
 		i := interpreter.Interpreter{
 			Expression: declaration.Expression,
-			Memory:     make(map[string]interface{}),
+			Memory:     Memory,
 		}
 
-		err = i.Execute(declaration)
+		rerr := i.Execute(declaration)
+		if rerr.HasError {
+			return rerr.Message
+		}
 
 	}
 
@@ -59,6 +64,9 @@ func run(source string) error {
 
 func runPrompt() {
 	scanner := bufio.NewScanner(os.Stdin)
+	Memory = &interpreter.Storage{
+		Memory: make(map[string]interface{}),
+	}
 	var err error
 	for {
 		print("> ")
@@ -75,6 +83,7 @@ func runPrompt() {
 			return
 		default:
 			err = run(input)
+			log.Printf("%v", Memory)
 			if err != nil {
 				printError(0, err.Error())
 			}
