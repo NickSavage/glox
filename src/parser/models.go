@@ -10,12 +10,14 @@ type Statement struct {
 }
 
 type Expression struct {
-	Expression *Expression
-	Left       *Expression
-	Operator   tokens.Token
-	Right      *Expression
-	Value      tokens.Token
-	Type       string // "binary, unary, literal, grouping"
+	Expression  *Expression
+	Left        *Expression
+	Operator    tokens.Token
+	Right       *Expression
+	Value       tokens.Token
+	Name        tokens.Token
+	AssignValue *Expression
+	Type        string // "binary, unary, literal, grouping, assignment, identifier"
 }
 
 type Parser struct {

@@ -24,6 +24,7 @@ func (p *Parser) varDeclaration() (*Statement, error) {
 	}
 	statement.VariableName = name
 	if p.match(tokens.TokenType{Type: "Equal"}) {
+		p.Current--
 		init, err = p.Expression()
 		if err != nil {
 			return &statement, err

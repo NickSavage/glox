@@ -3,7 +3,7 @@ package parser
 import (
 	"errors"
 	"github.com/NickSavage/glox/src/tokens"
-	//	"log"
+	"log"
 )
 
 func LiteralExpression(token tokens.Token) *Expression {
@@ -11,7 +11,27 @@ func LiteralExpression(token tokens.Token) *Expression {
 }
 
 func (p *Parser) Expression() (*Expression, error) {
-	return p.Equality()
+	return p.Assignment()
+}
+
+func (p *Parser) Assignment() (*Expression, error) {
+	expr, err := p.Equality()
+	//	return expr, err
+
+	if p.match(tokens.TokenType{Type: "Equal"}) {
+		//		equals := p.Tokens[p.Current-1]
+		value, err := p.Assignment()
+		log.Printf("value %v", value)
+		if err != nil {
+			return &Expression{}, nil
+		}
+		return &Expression{
+			Type:        "Assignment",
+			AssignValue: value,
+		}, nil
+
+	}
+	return expr, err
 }
 
 func (p *Parser) Equality() (*Expression, error) {

@@ -29,6 +29,21 @@ func parseSource(t *testing.T, text string) (Interpreter, error) {
 	return i, nil
 }
 
+func parseDeclaractions(t *testing.T, text string) ([]*parser.Statement, error) {
+	s := tokens.Scanner{
+		Source: text,
+		Tokens: make([]tokens.Token, 0),
+	}
+	err := s.ScanTokens()
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	p := parser.Parser{Tokens: s.Tokens, Current: 0}
+	declarations, err := p.Parse()
+	return declarations, err
+
+}
+
 func TestInterpretLiteral(t *testing.T) {
 	text := "1"
 	i, _ := parseSource(t, text)
