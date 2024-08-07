@@ -234,3 +234,22 @@ func TestParserExpression(t *testing.T) {
 	}
 
 }
+
+func TestParseIdentifier(t *testing.T) {
+	p, err := makeParser("a")
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	expr, err := p.Expression()
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	if expr.Type != "Variable" {
+		t.Errorf("unexpected expression, got %v want Variable", expr.Type)
+	}
+	if expr.Name.Lexeme != "a" {
+		t.Errorf("unexpected variable name, got %v want 'a'", expr.Name.Lexeme)
+
+	}
+
+}

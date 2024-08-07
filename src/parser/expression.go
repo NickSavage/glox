@@ -6,10 +6,6 @@ import (
 	"log"
 )
 
-func LiteralExpression(token tokens.Token) *Expression {
-	return &Expression{Value: token, Type: "Literal"}
-}
-
 func (p *Parser) Expression() (*Expression, error) {
 	return p.Assignment()
 }
@@ -152,7 +148,12 @@ func (p *Parser) Unary() (*Expression, error) {
 	return p.Primary()
 }
 
+func LiteralExpression(token tokens.Token) *Expression {
+	return &Expression{Value: token, Type: "Literal"}
+}
+
 func (p *Parser) Primary() (*Expression, error) {
+	log.Printf("next %v", p.Tokens[p.Current])
 	if p.match(tokens.TokenType{Type: "False"}) {
 		return LiteralExpression(p.Tokens[p.Current-1]), nil
 	}
@@ -167,6 +168,9 @@ func (p *Parser) Primary() (*Expression, error) {
 	}
 	if p.match(tokens.TokenType{Type: "String"}) {
 		return LiteralExpression(p.Tokens[p.Current-1]), nil
+	}
+	if p.match(tokens.TokenType{Type: "Identifier"}) {
+		return &Expression{Name: p.Tokens[p.Current-1], Type: "Variable"}, nil
 	}
 
 	// TODO: add expression()

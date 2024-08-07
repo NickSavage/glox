@@ -23,7 +23,7 @@ func (i *Interpreter) executeVariable(statement *parser.Statement) RuntimeError 
 	}
 	log.Printf("evaluate value %v", value)
 	i.Put(statement.VariableName.Lexeme, value)
-	return RuntimeError{}
+	return RuntimeError{HasError: false}
 }
 
 func (i *Interpreter) Execute(statement *parser.Statement) RuntimeError {
@@ -31,6 +31,7 @@ func (i *Interpreter) Execute(statement *parser.Statement) RuntimeError {
 	case "Print":
 		result, rerr := i.Evaluate(statement.Expression)
 		if rerr.HasError {
+			log.Printf("rerr %v", rerr)
 			log.Printf("? %v", rerr.Message.Error())
 			return rerr
 		}
@@ -64,6 +65,8 @@ func (i *Interpreter) Evaluate(expr *parser.Expression) (interface{}, RuntimeErr
 		return i.evaluateIdentifier(expr)
 	case "Assignment":
 		return i.evaluateAssignment(expr)
+	case "Variable":
+		return i.evaluateVariable(expr)
 	default:
 		return nil, RuntimeError{
 			Message:  fmt.Errorf("unknown expression type %v", expr.Type),
@@ -73,8 +76,18 @@ func (i *Interpreter) Evaluate(expr *parser.Expression) (interface{}, RuntimeErr
 	}
 }
 
+func (i *Interpreter) evaluateVariable(expr *parser.Expression) (interface{}, RuntimeError) {
+	result, err := i.Get(expr.Name.Lexeme)
+	log.Printf("result? %v", result)
+	return result, RuntimeError{
+		Message:  err,
+		HasError: false,
+		Token:    expr.Operator,
+	}
+}
+
 func (i *Interpreter) evaluateIdentifier(expr *parser.Expression) (interface{}, RuntimeError) {
-	return expr.Value, RuntimeError{}
+	return expr.Value, RuntimeError{HasError: false}
 }
 
 func (i *Interpreter) evaluateAssignment(expr *parser.Expression) (interface{}, RuntimeError) {

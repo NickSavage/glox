@@ -32,14 +32,14 @@ func TestGetUndefined(t *testing.T) {
 
 }
 
-func TestVarAssignment(t *testing.T) {
+func TestVarInit(t *testing.T) {
 	memory := &Storage{
 		Memory: make(map[string]interface{}),
 	}
 	var i Interpreter
 
 	text := "var a = 1 + 1;"
-	declarations, err := parseDeclaractions(t, text)
+	declarations, err := parseDeclarations(t, text)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
@@ -60,6 +60,38 @@ func TestVarAssignment(t *testing.T) {
 	}
 	if result != 2 {
 		t.Errorf("wrong result, got %v want %v", result, 2)
+	}
+
+}
+
+func TestVarInitAssignment(t *testing.T) {
+	memory := &Storage{
+		Memory: make(map[string]interface{}),
+	}
+	var i Interpreter
+
+	text := "var a = 1 + 1; a = 3;"
+	declarations, err := parseDeclarations(t, text)
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	for _, declaration := range declarations {
+		i = Interpreter{
+			Expression: declaration.Expression,
+			Memory:     memory,
+		}
+		rerr := i.Execute(declaration)
+		if rerr.HasError {
+			t.Errorf(err.Error())
+		}
+	}
+
+	result, err := i.Get("a")
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	if result != 3 {
+		t.Errorf("wrong result, got %v want %v", result, 3)
 	}
 
 }

@@ -17,5 +17,7 @@ type RuntimeError struct {
 }
 
 type Storage struct {
-	Memory map[string]interface{}
+	Memory       map[string]interface{}
+	Enclosing    *Storage
+	HasEnclosing bool
 }
