@@ -12,6 +12,8 @@ func (p *Parser) Expression() (*Expression, error) {
 
 func (p *Parser) Assignment() (*Expression, error) {
 	expr, err := p.Equality()
+	log.Printf("expr type %v", expr.Type)
+	log.Printf("expr value %v", expr.Value)
 	//	return expr, err
 
 	if p.match(tokens.TokenType{Type: "Equal"}) {
@@ -23,6 +25,7 @@ func (p *Parser) Assignment() (*Expression, error) {
 		}
 		return &Expression{
 			Type:        "Assignment",
+			Name:        expr.Name,
 			AssignValue: value,
 		}, nil
 

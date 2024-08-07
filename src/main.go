@@ -52,6 +52,7 @@ func run(source string) error {
 			Memory:     Memory,
 		}
 
+		log.Printf("dec %v", declaration)
 		rerr := i.Execute(declaration)
 		if rerr.HasError {
 			return rerr.Message
