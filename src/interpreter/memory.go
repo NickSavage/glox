@@ -4,27 +4,33 @@ import (
 	"fmt"
 )
 
-func (i *Interpreter) Assign(key string, value interface{}) error {
-	_, ok := i.Memory.Memory[key]
+func (s *Storage) Assign(key string, value interface{}) error {
+	_, ok := s.Memory[key]
 	if !ok {
+		if s.HasEnclosing {
+			return s.Enclosing.Assign(key, value)
+		}
 		return fmt.Errorf("undefined variable: %s", key)
 	}
-	return i.Put(key, value)
+	return s.Put(key, value)
 }
 
-func (i *Interpreter) Define(key string, value interface{}) error {
-	return i.Put(key, value)
+func (s *Storage) Define(key string, value interface{}) error {
+	return s.Put(key, value)
 
 }
 
-func (i *Interpreter) Put(key string, value interface{}) error {
-	i.Memory.Memory[key] = value
+func (s *Storage) Put(key string, value interface{}) error {
+	s.Memory[key] = value
 	return nil
 }
 
-func (i *Interpreter) Get(key string) (interface{}, error) {
-	value, ok := i.Memory.Memory[key]
+func (s *Storage) Get(key string) (interface{}, error) {
+	value, ok := s.Memory[key]
 	if !ok {
+		if s.HasEnclosing {
+			return s.Enclosing.Get(key)
+		}
 		return nil, fmt.Errorf("undefined variable: %s", key)
 	}
 	return value, nil

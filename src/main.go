@@ -51,7 +51,7 @@ func run(source string) error {
 	}
 	for _, declaration := range declarations {
 
-		log.Printf("dec %v", declaration)
+		log.Printf("----dec %v", declaration)
 		rerr := i.Execute(declaration)
 		if rerr.HasError {
 			return rerr.Message
@@ -83,7 +83,6 @@ func runPrompt() {
 			return
 		default:
 			err = run(input)
-			log.Printf("%v", Memory)
 			if err != nil {
 				printError(0, err.Error())
 			}
@@ -94,6 +93,9 @@ func runPrompt() {
 }
 
 func runFile(path string) error {
+	Memory = &interpreter.Storage{
+		Memory: make(map[string]interface{}),
+	}
 	contents, err := ioutil.ReadFile(path)
 	if err != nil {
 		log.Fatal(err)

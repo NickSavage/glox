@@ -1,14 +1,15 @@
 package interpreter
 
 import (
+	//	"log"
 	"testing"
 )
 
 func TestPutGetMemoryData(t *testing.T) {
 	text := "'hello world';"
 	i, _ := parseSource(t, text)
-	i.Put("hello", "world")
-	result, err := i.Get("hello")
+	i.Memory.Put("hello", "world")
+	result, err := i.Memory.Get("hello")
 	if err != nil {
 		t.Errorf(err.Error())
 	}
@@ -21,7 +22,7 @@ func TestPutGetMemoryData(t *testing.T) {
 func TestGetUndefined(t *testing.T) {
 	text := "'hello world';"
 	i, _ := parseSource(t, text)
-	_, err := i.Get("hello")
+	_, err := i.Memory.Get("hello")
 	if err == nil {
 		t.Errorf("expected an error and did not receive one")
 	}
@@ -54,7 +55,7 @@ func TestVarInit(t *testing.T) {
 		}
 	}
 
-	result, err := i.Get("a")
+	result, err := i.Memory.Get("a")
 	if err != nil {
 		t.Errorf(err.Error())
 	}
@@ -86,7 +87,7 @@ func TestVarInitAssignment(t *testing.T) {
 		}
 	}
 
-	result, err := i.Get("a")
+	result, err := i.Memory.Get("a")
 	if err != nil {
 		t.Errorf(err.Error())
 	}
@@ -129,7 +130,40 @@ func TestLocalVarAssigment(t *testing.T) {
 		Memory: make(map[string]interface{}),
 	}
 
-	text := " var a = 1;{ var a = 2; a = 3;}"
+	text := " var a = 1; var b = 2; { var a = 2; a = 3; print b;}"
+	declarations, err := parseDeclarations(t, text)
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	if len(declarations) != 3 {
+		t.Errorf("wrong number of declarations, got %v want %v", len(declarations), 2)
+	}
+	i := Interpreter{
+		Expression: declarations[0].Expression,
+		Memory:     memory,
+	}
+	for _, declaration := range declarations {
+		i.Expression = declaration.Expression
+		rerr := i.Execute(declaration)
+		if rerr.HasError {
+			t.Errorf(rerr.Message.Error())
+		}
+	}
+	result, err := i.Memory.Get("a")
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	if result != 1 {
+		t.Errorf("wrong result, got %v want %v", result, 1)
+	}
+
+}
+func TestLocalVarBlockGlobalAssignment(t *testing.T) {
+	memory := &Storage{
+		Memory: make(map[string]interface{}),
+	}
+
+	text := " var a = 1; { a = 2; }"
 	declarations, err := parseDeclarations(t, text)
 	if err != nil {
 		t.Errorf(err.Error())
@@ -145,15 +179,15 @@ func TestLocalVarAssigment(t *testing.T) {
 		i.Expression = declaration.Expression
 		rerr := i.Execute(declaration)
 		if rerr.HasError {
-			t.Errorf(err.Error())
+			t.Errorf(rerr.Message.Error())
 		}
 	}
-	result, err := i.Get("a")
+	result, err := i.Memory.Get("a")
 	if err != nil {
 		t.Errorf(err.Error())
 	}
-	if result != 1 {
-		t.Errorf("wrong result, got %v want %v", result, 1)
+	if result != 2 {
+		t.Errorf("wrong result, got %v want %v", result, 2)
 	}
 
 }

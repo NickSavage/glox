@@ -3,7 +3,6 @@ package parser
 import (
 	"errors"
 	"github.com/NickSavage/glox/src/tokens"
-	"log"
 )
 
 func (p *Parser) Expression() (*Expression, error) {
@@ -12,14 +11,11 @@ func (p *Parser) Expression() (*Expression, error) {
 
 func (p *Parser) Assignment() (*Expression, error) {
 	expr, err := p.Equality()
-	log.Printf("expr type %v", expr.Type)
-	log.Printf("expr value %v", expr.Value)
 	//	return expr, err
 
 	if p.match(tokens.TokenType{Type: "Equal"}) {
 		//		equals := p.Tokens[p.Current-1]
 		value, err := p.Assignment()
-		log.Printf("value %v", value)
 		if err != nil {
 			return &Expression{}, nil
 		}
@@ -156,7 +152,6 @@ func LiteralExpression(token tokens.Token) *Expression {
 }
 
 func (p *Parser) Primary() (*Expression, error) {
-	log.Printf("next %v", p.Tokens[p.Current])
 	if p.match(tokens.TokenType{Type: "False"}) {
 		return LiteralExpression(p.Tokens[p.Current-1]), nil
 	}

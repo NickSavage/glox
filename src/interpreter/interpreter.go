@@ -21,20 +21,28 @@ func (i *Interpreter) executeVariable(statement *parser.Statement) RuntimeError 
 		log.Printf("err %v", err)
 		return err
 	}
-	i.Define(statement.VariableName.Lexeme, value)
+	i.Memory.Define(statement.VariableName.Lexeme, value)
 	return RuntimeError{HasError: false}
 }
 
 func (i *Interpreter) Execute(statement *parser.Statement) RuntimeError {
 	switch statement.Type.Type {
 	case "Block":
+		previous := i.Memory
+		i.Memory = &Storage{
+			Memory:       make(map[string]interface{}),
+			Enclosing:    previous,
+			HasEnclosing: true,
+		}
 		for _, statement := range statement.Statements {
-			log.Printf("statement %v", statement)
+			log.Printf("----run statement %v", statement)
 			rerr := i.Execute(statement)
 			if rerr.HasError {
+				i.Memory = previous
 				return rerr
 			}
 		}
+		i.Memory = previous
 	case "Print":
 		result, rerr := i.Evaluate(statement.Expression)
 		if rerr.HasError {
@@ -61,7 +69,7 @@ func (i *Interpreter) Execute(statement *parser.Statement) RuntimeError {
 			return rerr
 		}
 		if statement.Expression.Type == "Assignment" {
-			err := i.Assign(statement.Expression.Name.Lexeme, value)
+			err := i.Memory.Assign(statement.Expression.Name.Lexeme, value)
 			if err != nil {
 				return RuntimeError{
 					Message:  err,
@@ -102,7 +110,7 @@ func (i *Interpreter) Evaluate(expr *parser.Expression) (interface{}, RuntimeErr
 }
 
 func (i *Interpreter) evaluateVariable(expr *parser.Expression) (interface{}, RuntimeError) {
-	result, err := i.Get(expr.Name.Lexeme)
+	result, err := i.Memory.Get(expr.Name.Lexeme)
 	if err != nil {
 		return nil, RuntimeError{
 			Message:  err,

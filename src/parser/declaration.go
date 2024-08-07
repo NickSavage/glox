@@ -1,6 +1,5 @@
 package parser
 
-import "log"
 import "github.com/NickSavage/glox/src/tokens"
 
 func (p *Parser) Declaration() (*Statement, error) {
@@ -18,7 +17,6 @@ func (p *Parser) varDeclaration() (*Statement, error) {
 	statement.Type = tokens.TokenType{Type: "Variable"}
 	var init *Expression
 	name, err := p.consume(tokens.TokenType{Type: "Identifier"}, "expecting variable name.")
-	log.Printf("name %v", name)
 	if err != nil {
 		return &statement, err
 	}
