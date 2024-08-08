@@ -126,3 +126,27 @@ func TestIfReturnStatements(t *testing.T) {
 	}
 
 }
+
+func TestFunctionWrongNumberArguments(t *testing.T) {
+	memory := &Storage{
+		Memory: make(map[string]interface{}),
+	}
+
+	text := "func a(x) { if x == 1 {return 2;} return 3; } var a = a(1);"
+	declarations, err := parseDeclarations(t, text)
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	i := Interpreter{
+		Expression: declarations[0].Expression,
+		Memory:     memory,
+	}
+	for _, declaration := range declarations {
+		i.Expression = declaration.Expression
+		rerr := i.Execute(declaration)
+		if rerr.HasError {
+			t.Errorf(rerr.Message.Error())
+		}
+	}
+
+}

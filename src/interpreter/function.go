@@ -43,6 +43,13 @@ func (i *Interpreter) FunctionCall(expr *parser.Expression, arguments []interfac
 	} else {
 		s = statement
 	}
+	if len(s.Parameters) != len(arguments) {
+		return nil, RuntimeError{
+			Message:  fmt.Errorf("wrong number of arguments for %v, got %v want %v", expr.FunctionName.Lexeme, len(s.Parameters), len(arguments)),
+			HasError: true,
+			Token:    expr.FunctionName,
+		}
+	}
 	previous := i.Memory
 	i.Memory = &Storage{
 		Memory:       make(map[string]interface{}),
