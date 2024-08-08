@@ -100,3 +100,28 @@ func TestParseIfElseStatement(t *testing.T) {
 
 	}
 }
+
+func TestParseFunctionStatement(t *testing.T) {
+	p, err := makeParser("func hello(hi) { print hi; }")
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	statements, err := p.Parse()
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	if len(statements) != 1 {
+		t.Errorf("not the correct number of statements, got %v want %v", len(statements), 1)
+	}
+	function := statements[0]
+	if function.FunctionName.Lexeme != "hello" {
+		t.Errorf("wrong function name, got %v want %v", function.FunctionName, "hello")
+	}
+	if len(function.Parameters) != 1 {
+		t.Errorf("wrong number of parameters, got %v want 1", len(function.Parameters))
+	}
+	if len(function.Statements) != 1 {
+		t.Errorf("wrong number of statements, got %v want 1", len(function.Statements))
+	}
+
+}

@@ -270,5 +270,22 @@ func TestParseOr(t *testing.T) {
 		t.Errorf("unexpected operator, got %v want 'Or'", expr.Operator.Type.Type)
 
 	}
+}
 
+func TestParseFunctionCall(t *testing.T) {
+	p, err := makeParser("hello(hi)")
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	expr, err := p.Expression()
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	if expr.Type != "Function" {
+		t.Errorf("unexpected expression, got %v want Function", expr.Type)
+	}
+	if len(expr.Arguments) != 1 {
+		t.Errorf("unexpected len of arguments, got %v wanr %v", len(expr.Arguments), 1)
+
+	}
 }

@@ -174,7 +174,49 @@ func (p *Parser) Unary() (*Expression, error) {
 		return result, nil
 	}
 
-	return p.Primary()
+	return p.Call()
+}
+
+func (p *Parser) Call() (*Expression, error) {
+	expr, err := p.Primary()
+	for {
+		if p.match(tokens.TokenType{Type: "LeftParen"}) {
+			expr, err = p.FinishCall(expr)
+		} else {
+			break
+		}
+	}
+
+	return expr, err
+}
+
+func (p *Parser) FinishCall(expr *Expression) (*Expression, error) {
+	arguments := make([]*Expression, 0)
+	for {
+		if !(p.Tokens[p.Current].Type.Type == "LeftParen") {
+			if len(arguments) >= 255 {
+				log.Printf("cannot have more than 255 arguments")
+			}
+			argument, err := p.Expression()
+			if err != nil {
+				return &Expression{}, err
+			}
+			arguments = append(arguments, argument)
+			if !p.match(tokens.TokenType{Type: "Comma"}) {
+				break
+			}
+		}
+	}
+	if !(p.match(tokens.TokenType{Type: "RightParen"})) {
+		return &Expression{}, errors.New("expecting ) after function arguments")
+	}
+	result := &Expression{
+		Type:          "Function",
+		IsFunction:    true,
+		Arguments:     arguments,
+		FunctionParen: p.Tokens[p.Current-1],
+	}
+	return result, nil
 }
 
 func LiteralExpression(token tokens.Token) *Expression {

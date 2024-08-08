@@ -6,22 +6,27 @@ type Statement struct {
 	Type           tokens.TokenType
 	Expression     *Expression
 	VariableName   tokens.Token
+	FunctionName   tokens.Token
 	Initializer    *Expression
 	Statements     []*Statement
 	IsBlock        bool
 	Condition      *Expression
 	ElseStatements []*Statement
+	Parameters     []tokens.Token
 }
 
 type Expression struct {
-	Expression  *Expression
-	Left        *Expression
-	Operator    tokens.Token
-	Right       *Expression
-	Value       tokens.Token
-	Name        tokens.Token
-	AssignValue *Expression
-	Type        string // "binary, unary, literal, grouping, assignment, identifier"
+	Expression    *Expression
+	Left          *Expression
+	Operator      tokens.Token
+	Right         *Expression
+	Value         tokens.Token
+	Name          tokens.Token
+	AssignValue   *Expression
+	Type          string // "binary, unary, literal, grouping, assignment, identifier, function"
+	IsFunction    bool
+	Arguments     []*Expression
+	FunctionParen tokens.Token
 }
 
 type Parser struct {

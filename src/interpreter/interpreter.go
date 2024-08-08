@@ -168,6 +168,8 @@ func (i *Interpreter) Evaluate(expr *parser.Expression) (interface{}, RuntimeErr
 		return i.evaluateUnary(expr)
 	case "Binary":
 		return i.evaluateBinary(expr)
+	case "Function":
+		return i.evaluateFunction(expr)
 	case "Grouping":
 		return i.evaluateGrouping(expr)
 	case "Identifier":
@@ -304,6 +306,23 @@ func (i *Interpreter) evaluateUnary(expr *parser.Expression) (interface{}, Runti
 		HasError: true,
 		Token:    expr.Operator,
 	}
+}
+
+func (i *Interpreter) evaluateFunction(expr *parser.Expression) (interface{}, RuntimeError) {
+	arguments := make([]interface{}, 0)
+	for _, a := range expr.Arguments {
+		argument, rerr := i.Evaluate(a)
+		if rerr.HasError {
+			return nil, rerr
+		}
+		arguments = append(arguments, argument)
+	}
+	results, rerr := i.FunctionCall(expr, arguments)
+	if rerr.HasError {
+		return nil, rerr
+	}
+	return results, RuntimeError{}
+
 }
 
 func (i *Interpreter) convertInterfaceNumber(literal interface{}) (float64, string, error) {

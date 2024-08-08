@@ -21,6 +21,9 @@ func (p *Parser) Statement() (*Statement, error) {
 	if p.match(tokens.TokenType{Type: "For"}) {
 		return p.ForStatement()
 	}
+	if p.match(tokens.TokenType{Type: "Function"}) {
+		return p.FunctionStatement()
+	}
 	if p.match(tokens.TokenType{Type: "Print"}) {
 		return p.PrintStatement()
 	}
@@ -145,4 +148,50 @@ func (p *Parser) ExpressionStatement() (*Statement, error) {
 		Type:       tokens.TokenType{Type: "Expression"},
 		Expression: expr,
 	}, nil
+}
+
+func (p *Parser) FunctionStatement() (*Statement, error) {
+	log.Printf("start parsing function")
+	statement := &Statement{
+		Type: tokens.TokenType{Type: "Function"},
+	}
+	name := p.Tokens[p.Current]
+	log.Printf("function name %v", name.Lexeme)
+	if name.Type.Type != "Identifier" {
+		return statement, errors.New("expecting function name")
+	}
+	p.Current++
+	statement.FunctionName = name
+
+	if !(p.match(tokens.TokenType{Type: "LeftParen"})) {
+		return &Statement{}, errors.New("expecting '(' after function name")
+	}
+	parameters := make([]tokens.Token, 0)
+	for {
+		token := p.Tokens[p.Current]
+		if token.Type.Type != "Identifier" {
+			return statement, errors.New("Expecting parameter name")
+		}
+		parameters = append(parameters, token)
+		p.Current++
+		if !p.match(tokens.TokenType{Type: "Comma"}) {
+			break
+		}
+
+	}
+	statement.Parameters = parameters
+
+	if !(p.match(tokens.TokenType{Type: "RightParen"})) {
+		return &Statement{}, errors.New("expecting ')' after parameters")
+	}
+	if !(p.match(tokens.TokenType{Type: "LeftBrace"})) {
+		return &Statement{}, errors.New("expecting '{' before function body")
+	}
+	body, err := p.BlockStatement()
+	if err != nil {
+		return statement, err
+	}
+	statement.Statements = body.Statements
+	return statement, nil
+
 }

@@ -15,7 +15,7 @@ var keywords = map[string]TokenType{
 	"else":     TokenType{Type: "Else"},
 	"false":    TokenType{Type: "False"},
 	"for":      TokenType{Type: "For"},
-	"fun":      TokenType{Type: "Fun"},
+	"func":     TokenType{Type: "Function"},
 	"if":       TokenType{Type: "If"},
 	"nil":      TokenType{Type: "Nil"},
 	"or":       TokenType{Type: "Or"},
