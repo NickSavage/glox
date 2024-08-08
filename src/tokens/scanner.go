@@ -2,7 +2,7 @@ package tokens
 
 import (
 	"errors"
-	"fmt"
+	//	"fmt"
 	"log"
 	"strconv"
 )
@@ -117,7 +117,6 @@ func (s *Scanner) parseNumber(start int) (Token, error) {
 
 	}
 	if err != nil {
-		fmt.Println(err)
 		return Token{}, err
 	}
 	return Token{

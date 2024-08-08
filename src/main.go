@@ -34,9 +34,6 @@ func run(source string) error {
 		return err
 	}
 
-	for _, token := range s.Tokens {
-		fmt.Println(token)
-	}
 	p := parser.Parser{
 		Tokens:  s.Tokens,
 		Current: 0,
@@ -51,7 +48,6 @@ func run(source string) error {
 	}
 	for _, declaration := range declarations {
 
-		log.Printf("----dec %v", declaration)
 		rerr := i.Execute(declaration)
 		if rerr.HasError {
 			return rerr.Message

@@ -9,6 +9,21 @@ import (
 	//	"github.com/NickSavage/glox/src/tokens"
 )
 
+func (i *Interpreter) executeReturn(statement *parser.Statement) RuntimeError {
+
+	result, rerr := i.Evaluate(statement.Expression)
+	if rerr.HasError {
+		log.Printf("rerr %v", rerr.Message.Error())
+		return rerr
+	}
+	return RuntimeError{
+		HasError:    false,
+		Return:      true,
+		ReturnValue: result,
+	}
+
+}
+
 func (i *Interpreter) FunctionCall(expr *parser.Expression, arguments []interface{}) (interface{}, RuntimeError) {
 	statement, err := i.Memory.Get(expr.FunctionName.Lexeme)
 	if err != nil {
@@ -28,15 +43,23 @@ func (i *Interpreter) FunctionCall(expr *parser.Expression, arguments []interfac
 	} else {
 		s = statement
 	}
-	log.Printf("statement %v", s)
 	previous := i.Memory
 	i.Memory = &Storage{
 		Memory:       make(map[string]interface{}),
 		Enclosing:    previous,
 		HasEnclosing: true,
 	}
-	i.executeBlock(s)
+	for index, _ := range arguments {
+		i.Memory.Define(s.Parameters[index].Lexeme, arguments[index])
+	}
+	rerr := i.executeBlock(s)
 	i.Memory = previous
+	if rerr.HasError {
+		return nil, rerr
+	}
+	if rerr.Return {
+		return rerr.ReturnValue, RuntimeError{}
+	}
 
 	return nil, RuntimeError{}
 }

@@ -14,9 +14,11 @@ type Interpreter struct {
 }
 
 type RuntimeError struct {
-	Message  error
-	HasError bool
-	Token    tokens.Token
+	Message     error
+	HasError    bool
+	Token       tokens.Token
+	Return      bool
+	ReturnValue interface{}
 }
 
 type Storage struct {

@@ -48,9 +48,8 @@ func (i *Interpreter) executeVariable(statement *parser.Statement) RuntimeError 
 
 func (i *Interpreter) executeBlock(statement *parser.Statement) RuntimeError {
 	for _, statement := range statement.Statements {
-		log.Printf("----run statement %v", statement)
 		rerr := i.Execute(statement)
-		if rerr.HasError {
+		if rerr.HasError || rerr.Return {
 			return rerr
 		}
 	}
@@ -80,9 +79,8 @@ func (i *Interpreter) Execute(statement *parser.Statement) RuntimeError {
 		}
 		if i.isTruthy(result) {
 			for _, statement := range statement.Statements {
-				log.Printf("----run statement %v", statement)
 				rerr := i.Execute(statement)
-				if rerr.HasError {
+				if rerr.HasError || rerr.Return {
 					return rerr
 
 				}
@@ -90,9 +88,8 @@ func (i *Interpreter) Execute(statement *parser.Statement) RuntimeError {
 			}
 		} else {
 			for _, statement := range statement.ElseStatements {
-				log.Printf("----run else statement %v", statement)
 				rerr := i.Execute(statement)
-				if rerr.HasError {
+				if rerr.HasError || rerr.Return {
 					return rerr
 
 				}
@@ -103,9 +100,7 @@ func (i *Interpreter) Execute(statement *parser.Statement) RuntimeError {
 		statements := statement.Statements
 		i.InLoop = true
 		for {
-			log.Printf("loop %v", len(statements))
 			for _, statement = range statements {
-				log.Printf("----run for statement %v", statement)
 				rerr := i.Execute(statement)
 				if i.BreakTriggered {
 					i.InLoop = false
@@ -126,7 +121,6 @@ func (i *Interpreter) Execute(statement *parser.Statement) RuntimeError {
 		}
 	case "Function":
 		i.Memory.Define(statement.FunctionName.Lexeme, statement)
-		log.Printf("memory %v", i.Memory.Memory)
 	case "Print":
 		result, rerr := i.Evaluate(statement.Expression)
 		if rerr.HasError {
@@ -140,8 +134,9 @@ func (i *Interpreter) Execute(statement *parser.Statement) RuntimeError {
 		default:
 			return i.executePrint(fmt.Sprintf("%v", v))
 		}
+	case "Return":
+		return i.executeReturn(statement)
 	case "Variable":
-		log.Printf("???")
 		return i.executeVariable(statement)
 
 	case "Expression":
@@ -168,7 +163,6 @@ func (i *Interpreter) Execute(statement *parser.Statement) RuntimeError {
 }
 
 func (i *Interpreter) Evaluate(expr *parser.Expression) (interface{}, RuntimeError) {
-	log.Printf("%v type", expr.Type)
 	switch expr.Type {
 	case "Literal":
 		return i.evaluateLiteral(expr)
@@ -177,7 +171,6 @@ func (i *Interpreter) Evaluate(expr *parser.Expression) (interface{}, RuntimeErr
 	case "Binary":
 		return i.evaluateBinary(expr)
 	case "Function":
-		log.Printf("evaluate function")
 		return i.evaluateFunctionCall(expr)
 	case "Grouping":
 		return i.evaluateGrouping(expr)
@@ -207,7 +200,6 @@ func (i *Interpreter) evaluateVariable(expr *parser.Expression) (interface{}, Ru
 			Token:    expr.Name,
 		}
 	}
-	log.Printf("result? %v", result)
 	return result, RuntimeError{}
 }
 
@@ -216,7 +208,6 @@ func (i *Interpreter) evaluateIdentifier(expr *parser.Expression) (interface{}, 
 }
 
 func (i *Interpreter) evaluateAssignment(expr *parser.Expression) (interface{}, RuntimeError) {
-	log.Printf("assign %v", expr)
 	return i.Evaluate(expr.AssignValue)
 }
 
@@ -232,7 +223,6 @@ func (i *Interpreter) evaluateLiteral(expr *parser.Expression) (interface{}, Run
 			Token:    expr.Value,
 		}
 	}
-	log.Printf("literal value %v", expr.Value)
 	return expr.Value.Literal, RuntimeError{}
 }
 
@@ -264,7 +254,6 @@ func (i *Interpreter) isEqual(a, b interface{}) bool {
 }
 
 func (i *Interpreter) evaluateLogical(expr *parser.Expression) (interface{}, RuntimeError) {
-	log.Printf("")
 	left, rerr := i.Evaluate(expr.Left)
 	if rerr.HasError {
 		return nil, rerr
@@ -318,7 +307,6 @@ func (i *Interpreter) evaluateUnary(expr *parser.Expression) (interface{}, Runti
 }
 
 func (i *Interpreter) evaluateFunctionCall(expr *parser.Expression) (interface{}, RuntimeError) {
-	log.Printf("function %v", expr)
 	arguments := make([]interface{}, 0)
 	for _, a := range expr.Arguments {
 		argument, rerr := i.Evaluate(a)
