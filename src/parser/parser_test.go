@@ -253,3 +253,22 @@ func TestParseIdentifier(t *testing.T) {
 	}
 
 }
+
+func TestParseOr(t *testing.T) {
+	p, err := makeParser("a or b")
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	expr, err := p.Expression()
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	if expr.Type != "Logical" {
+		t.Errorf("unexpected expression, got %v want Logical", expr.Type)
+	}
+	if expr.Operator.Type.Type != "Or" {
+		t.Errorf("unexpected operator, got %v want 'Or'", expr.Operator.Type.Type)
+
+	}
+
+}

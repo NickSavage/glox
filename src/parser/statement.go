@@ -15,6 +15,9 @@ func (p *Parser) Statement() (*Statement, error) {
 	if p.match(tokens.TokenType{Type: "Break"}) {
 		return p.BreakStatement()
 	}
+	if p.match(tokens.TokenType{Type: "Continue"}) {
+		return p.ContinueStatement()
+	}
 	if p.match(tokens.TokenType{Type: "For"}) {
 		return p.ForStatement()
 	}
@@ -31,6 +34,13 @@ func (p *Parser) BreakStatement() (*Statement, error) {
 	return &Statement{
 		Type: tokens.TokenType{Type: "Break"},
 	}, nil
+}
+
+func (p *Parser) ContinueStatement() (*Statement, error) {
+	return &Statement{
+		Type: tokens.TokenType{Type: "Continue"},
+	}, nil
+
 }
 
 func (p *Parser) IfStatement() (*Statement, error) {

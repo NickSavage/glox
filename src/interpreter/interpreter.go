@@ -25,6 +25,16 @@ func (i *Interpreter) executeBreak() RuntimeError {
 	i.BreakTriggered = true
 	return RuntimeError{}
 }
+func (i *Interpreter) executeContinue() RuntimeError {
+	if !i.InLoop {
+		return RuntimeError{
+			Message:  errors.New("Cannot call continue outside a for loop"),
+			HasError: true,
+		}
+	}
+	i.ContinueTriggered = true
+	return RuntimeError{}
+}
 
 func (i *Interpreter) executeVariable(statement *parser.Statement) RuntimeError {
 	value, err := i.Evaluate(statement.Initializer)
@@ -56,6 +66,8 @@ func (i *Interpreter) Execute(statement *parser.Statement) RuntimeError {
 		i.Memory = previous
 	case "Break":
 		return i.executeBreak()
+	case "Continue":
+		return i.executeContinue()
 	case "If":
 		result, rerr := i.Evaluate(statement.Condition)
 		if rerr.HasError {
@@ -93,6 +105,10 @@ func (i *Interpreter) Execute(statement *parser.Statement) RuntimeError {
 				if i.BreakTriggered {
 					i.InLoop = false
 					i.BreakTriggered = false
+					break
+				}
+				if i.ContinueTriggered {
+					i.ContinueTriggered = false
 					break
 				}
 				if rerr.HasError {
@@ -160,6 +176,8 @@ func (i *Interpreter) Evaluate(expr *parser.Expression) (interface{}, RuntimeErr
 		return i.evaluateAssignment(expr)
 	case "Variable":
 		return i.evaluateVariable(expr)
+	case "Logical":
+		return i.evaluateLogical(expr)
 	default:
 		return nil, RuntimeError{
 			Message:  fmt.Errorf("unknown expression type %v", expr.Type),
@@ -232,6 +250,25 @@ func (i *Interpreter) isEqual(a, b interface{}) bool {
 		return true
 	}
 	return a == b
+}
+
+func (i *Interpreter) evaluateLogical(expr *parser.Expression) (interface{}, RuntimeError) {
+	log.Printf("")
+	left, rerr := i.Evaluate(expr.Left)
+	if rerr.HasError {
+		return nil, rerr
+	}
+	if expr.Operator.Type.Type == "Or" {
+		if i.isTruthy(left) {
+			return left, RuntimeError{}
+		}
+	} else {
+		if !i.isTruthy(left) {
+			return left, RuntimeError{}
+		}
+
+	}
+	return i.Evaluate(expr.Right)
 }
 
 func (i *Interpreter) evaluateUnary(expr *parser.Expression) (interface{}, RuntimeError) {

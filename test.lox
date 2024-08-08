@@ -1,8 +1,14 @@
 var a = 1;
+var b = 1;
 for {
     a = a + 1;
     print a;
+    if a == 5 or a == 9 {
+        continue
+    }
+    b = b + 1;
     if a > 10 {
         break
     }
 }
+print b;

@@ -149,3 +149,96 @@ func TestInterpretVariables(t *testing.T) {
 	}
 
 }
+
+func TestForBreakStatements(t *testing.T) {
+	memory := &Storage{
+		Memory: make(map[string]interface{}),
+	}
+
+	text := "var a = 1; for { a = a + 1; if a > 10 { break }}"
+	declarations, err := parseDeclarations(t, text)
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	i := Interpreter{
+		Expression: declarations[0].Expression,
+		Memory:     memory,
+	}
+	for _, declaration := range declarations {
+		i.Expression = declaration.Expression
+		rerr := i.Execute(declaration)
+		if rerr.HasError {
+			t.Errorf(rerr.Message.Error())
+		}
+	}
+	result, err := i.Memory.Get("a")
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	if result != 11 {
+		t.Errorf("wrong result, got %v want %v", result, 11)
+	}
+}
+
+func TestForContinueBreakStatements(t *testing.T) {
+	memory := &Storage{
+		Memory: make(map[string]interface{}),
+	}
+
+	text := "var a = 1; var b = 1; for { a = a + 1; if a == 5 { continue} b = b + 1; if a > 10 { break }}"
+	declarations, err := parseDeclarations(t, text)
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	i := Interpreter{
+		Expression: declarations[0].Expression,
+		Memory:     memory,
+	}
+	for _, declaration := range declarations {
+		i.Expression = declaration.Expression
+		rerr := i.Execute(declaration)
+		if rerr.HasError {
+			t.Errorf(rerr.Message.Error())
+		}
+	}
+	result, err := i.Memory.Get("b")
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	expected := 10
+	if result != expected {
+		t.Errorf("wrong result, got %v want %v", result, expected)
+	}
+}
+
+func TestLogicalStatement(t *testing.T) {
+	memory := &Storage{
+		Memory: make(map[string]interface{}),
+	}
+
+	text := "var a = 1 > 2 or 2 < 4;"
+	declarations, err := parseDeclarations(t, text)
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	i := Interpreter{
+		Expression: declarations[0].Expression,
+		Memory:     memory,
+	}
+	for _, declaration := range declarations {
+		i.Expression = declaration.Expression
+		rerr := i.Execute(declaration)
+		if rerr.HasError {
+			t.Errorf(rerr.Message.Error())
+		}
+	}
+	result, err := i.Memory.Get("a")
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	expected := true
+	if result != expected {
+		t.Errorf("wrong result, got %v want %v", result, expected)
+	}
+
+}

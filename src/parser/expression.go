@@ -11,7 +11,7 @@ func (p *Parser) Expression() (*Expression, error) {
 }
 
 func (p *Parser) Assignment() (*Expression, error) {
-	expr, err := p.Equality()
+	expr, err := p.Or()
 	//	return expr, err
 
 	if p.match(tokens.TokenType{Type: "Equal"}) {
@@ -26,6 +26,33 @@ func (p *Parser) Assignment() (*Expression, error) {
 			AssignValue: value,
 		}, nil
 
+	}
+	return expr, err
+}
+
+func (p *Parser) Or() (*Expression, error) {
+	expr, err := p.And()
+	result := &Expression{}
+	if p.match(tokens.TokenType{Type: "Or"}) {
+		result.Operator = p.Tokens[p.Current-1]
+		result.Type = "Logical"
+		result.Left = expr
+		result.Right, err = p.And()
+		return result, nil
+	}
+	return expr, err
+
+}
+
+func (p *Parser) And() (*Expression, error) {
+	expr, err := p.Equality()
+	result := &Expression{}
+	if p.match(tokens.TokenType{Type: "And"}) {
+		result.Operator = p.Tokens[p.Current-1]
+		result.Type = "Logical"
+		result.Left = expr
+		result.Right, err = p.Equality()
+		return result, nil
 	}
 	return expr, err
 }
