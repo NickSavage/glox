@@ -284,6 +284,9 @@ func TestParseFunctionCall(t *testing.T) {
 	if expr.Type != "Function" {
 		t.Errorf("unexpected expression, got %v want Function", expr.Type)
 	}
+	if expr.FunctionName.Lexeme != "hello" {
+		t.Errorf("wrong function name, got %v want %v", expr.FunctionName.Lexeme, "hello")
+	}
 	if len(expr.Arguments) != 1 {
 		t.Errorf("unexpected len of arguments, got %v wanr %v", len(expr.Arguments), 1)
 

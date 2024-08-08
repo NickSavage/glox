@@ -179,6 +179,7 @@ func (p *Parser) Unary() (*Expression, error) {
 
 func (p *Parser) Call() (*Expression, error) {
 	expr, err := p.Primary()
+	log.Printf("name? %v", expr.Value)
 	for {
 		if p.match(tokens.TokenType{Type: "LeftParen"}) {
 			expr, err = p.FinishCall(expr)
@@ -191,6 +192,7 @@ func (p *Parser) Call() (*Expression, error) {
 }
 
 func (p *Parser) FinishCall(expr *Expression) (*Expression, error) {
+	log.Printf("function name %v", expr.Value)
 	arguments := make([]*Expression, 0)
 	for {
 		if !(p.Tokens[p.Current].Type.Type == "LeftParen") {
@@ -215,6 +217,7 @@ func (p *Parser) FinishCall(expr *Expression) (*Expression, error) {
 		IsFunction:    true,
 		Arguments:     arguments,
 		FunctionParen: p.Tokens[p.Current-1],
+		FunctionName:  expr.Name,
 	}
 	return result, nil
 }
@@ -224,6 +227,7 @@ func LiteralExpression(token tokens.Token) *Expression {
 }
 
 func (p *Parser) Primary() (*Expression, error) {
+	log.Printf("next %v", p.Tokens[p.Current])
 	if p.match(tokens.TokenType{Type: "False"}) {
 		return LiteralExpression(p.Tokens[p.Current-1]), nil
 	}

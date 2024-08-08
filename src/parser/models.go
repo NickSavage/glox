@@ -26,6 +26,7 @@ type Expression struct {
 	Type          string // "binary, unary, literal, grouping, assignment, identifier, function"
 	IsFunction    bool
 	Arguments     []*Expression
+	FunctionName  tokens.Token
 	FunctionParen tokens.Token
 }
 

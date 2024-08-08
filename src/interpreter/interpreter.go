@@ -46,6 +46,18 @@ func (i *Interpreter) executeVariable(statement *parser.Statement) RuntimeError 
 	return RuntimeError{HasError: false}
 }
 
+func (i *Interpreter) executeBlock(statement *parser.Statement) RuntimeError {
+	for _, statement := range statement.Statements {
+		log.Printf("----run statement %v", statement)
+		rerr := i.Execute(statement)
+		if rerr.HasError {
+			return rerr
+		}
+	}
+	return RuntimeError{}
+
+}
+
 func (i *Interpreter) Execute(statement *parser.Statement) RuntimeError {
 	switch statement.Type.Type {
 	case "Block":
@@ -55,14 +67,7 @@ func (i *Interpreter) Execute(statement *parser.Statement) RuntimeError {
 			Enclosing:    previous,
 			HasEnclosing: true,
 		}
-		for _, statement := range statement.Statements {
-			log.Printf("----run statement %v", statement)
-			rerr := i.Execute(statement)
-			if rerr.HasError {
-				i.Memory = previous
-				return rerr
-			}
-		}
+		i.executeBlock(statement)
 		i.Memory = previous
 	case "Break":
 		return i.executeBreak()
@@ -119,6 +124,9 @@ func (i *Interpreter) Execute(statement *parser.Statement) RuntimeError {
 				break
 			}
 		}
+	case "Function":
+		i.Memory.Define(statement.FunctionName.Lexeme, statement)
+		log.Printf("memory", i.Memory.Memory)
 	case "Print":
 		result, rerr := i.Evaluate(statement.Expression)
 		if rerr.HasError {
@@ -169,7 +177,8 @@ func (i *Interpreter) Evaluate(expr *parser.Expression) (interface{}, RuntimeErr
 	case "Binary":
 		return i.evaluateBinary(expr)
 	case "Function":
-		return i.evaluateFunction(expr)
+		log.Printf("evaluate function")
+		return i.evaluateFunctionCall(expr)
 	case "Grouping":
 		return i.evaluateGrouping(expr)
 	case "Identifier":
@@ -308,7 +317,8 @@ func (i *Interpreter) evaluateUnary(expr *parser.Expression) (interface{}, Runti
 	}
 }
 
-func (i *Interpreter) evaluateFunction(expr *parser.Expression) (interface{}, RuntimeError) {
+func (i *Interpreter) evaluateFunctionCall(expr *parser.Expression) (interface{}, RuntimeError) {
+	log.Printf("function %v", expr)
 	arguments := make([]interface{}, 0)
 	for _, a := range expr.Arguments {
 		argument, rerr := i.Evaluate(a)
