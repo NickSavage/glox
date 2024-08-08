@@ -3,6 +3,7 @@ package parser
 import (
 	"errors"
 	"github.com/NickSavage/glox/src/tokens"
+	"log"
 )
 
 func (p *Parser) Expression() (*Expression, error) {
@@ -30,6 +31,7 @@ func (p *Parser) Assignment() (*Expression, error) {
 }
 
 func (p *Parser) Equality() (*Expression, error) {
+	log.Printf("equality")
 	var err error
 	result := &Expression{}
 	left, err := p.Comparison()
@@ -56,6 +58,7 @@ func (p *Parser) Equality() (*Expression, error) {
 
 func (p *Parser) Comparison() (*Expression, error) {
 
+	log.Printf("comparison")
 	var err error
 	result := &Expression{}
 	left, err := p.Term()

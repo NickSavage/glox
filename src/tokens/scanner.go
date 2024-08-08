@@ -9,6 +9,7 @@ import (
 
 var keywords = map[string]TokenType{
 	"and":    TokenType{Type: "And"},
+	"break":  TokenType{Type: "Break"},
 	"class":  TokenType{Type: "Class"},
 	"else":   TokenType{Type: "Else"},
 	"false":  TokenType{Type: "False"},

@@ -1,19 +1,8 @@
-var a = "global a";
-var b = "global b";
-var c = "global c";
-{
-  var a = "outer a";
-  var b = "outer b";
-  {
-    var a = "inner a";
+var a = 1;
+for {
+    a = a + 1;
     print a;
-    print b;
-    print c;
-  }
-  print a;
-  print b;
-  print c;
+    if a > 10 {
+        break
+    }
 }
-print a;
-print b;
-print c;

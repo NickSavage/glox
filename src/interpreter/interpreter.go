@@ -15,6 +15,17 @@ func (i *Interpreter) executePrint(text interface{}) RuntimeError {
 	return RuntimeError{}
 }
 
+func (i *Interpreter) executeBreak() RuntimeError {
+	if !i.InLoop {
+		return RuntimeError{
+			Message:  errors.New("Cannot call break outside a for loop"),
+			HasError: true,
+		}
+	}
+	i.BreakTriggered = true
+	return RuntimeError{}
+}
+
 func (i *Interpreter) executeVariable(statement *parser.Statement) RuntimeError {
 	value, err := i.Evaluate(statement.Initializer)
 	if err.HasError {
@@ -43,6 +54,55 @@ func (i *Interpreter) Execute(statement *parser.Statement) RuntimeError {
 			}
 		}
 		i.Memory = previous
+	case "Break":
+		return i.executeBreak()
+	case "If":
+		result, rerr := i.Evaluate(statement.Condition)
+		if rerr.HasError {
+			return rerr
+		}
+		if i.isTruthy(result) {
+			for _, statement := range statement.Statements {
+				log.Printf("----run statement %v", statement)
+				rerr := i.Execute(statement)
+				if rerr.HasError {
+					return rerr
+
+				}
+
+			}
+		} else {
+			for _, statement := range statement.ElseStatements {
+				log.Printf("----run else statement %v", statement)
+				rerr := i.Execute(statement)
+				if rerr.HasError {
+					return rerr
+
+				}
+
+			}
+		}
+	case "For":
+		statements := statement.Statements
+		i.InLoop = true
+		for {
+			log.Printf("loop %v", len(statements))
+			for _, statement = range statements {
+				log.Printf("----run for statement %v", statement)
+				rerr := i.Execute(statement)
+				if i.BreakTriggered {
+					i.InLoop = false
+					i.BreakTriggered = false
+					break
+				}
+				if rerr.HasError {
+					return rerr
+				}
+			}
+			if !i.InLoop {
+				break
+			}
+		}
 	case "Print":
 		result, rerr := i.Evaluate(statement.Expression)
 		if rerr.HasError {
@@ -143,6 +203,7 @@ func (i *Interpreter) evaluateLiteral(expr *parser.Expression) (interface{}, Run
 			Token:    expr.Value,
 		}
 	}
+	log.Printf("literal value %v", expr.Value)
 	return expr.Value.Literal, RuntimeError{}
 }
 

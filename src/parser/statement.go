@@ -9,6 +9,15 @@ import (
 )
 
 func (p *Parser) Statement() (*Statement, error) {
+	if p.match(tokens.TokenType{Type: "If"}) {
+		return p.IfStatement()
+	}
+	if p.match(tokens.TokenType{Type: "Break"}) {
+		return p.BreakStatement()
+	}
+	if p.match(tokens.TokenType{Type: "For"}) {
+		return p.ForStatement()
+	}
 	if p.match(tokens.TokenType{Type: "Print"}) {
 		return p.PrintStatement()
 	}
@@ -16,6 +25,64 @@ func (p *Parser) Statement() (*Statement, error) {
 		return p.BlockStatement()
 	}
 	return p.ExpressionStatement()
+}
+
+func (p *Parser) BreakStatement() (*Statement, error) {
+	return &Statement{
+		Type: tokens.TokenType{Type: "Break"},
+	}, nil
+}
+
+func (p *Parser) IfStatement() (*Statement, error) {
+	statement := &Statement{
+		Type: tokens.TokenType{Type: "If"},
+	}
+
+	log.Printf("find condition")
+	condition, err := p.Equality()
+	log.Printf("condition %v", condition)
+	log.Printf("find block")
+	if !(p.match(tokens.TokenType{Type: "LeftBrace"})) {
+		return statement, errors.New("expecting '{' after condition")
+	}
+	block, err := p.BlockStatement()
+	log.Printf("block %v", block)
+	if err != nil {
+		return statement, err
+	}
+	statement.Condition = condition
+	statement.Statements = block.Statements
+
+	if p.match(tokens.TokenType{Type: "Else"}) {
+		if !(p.match(tokens.TokenType{Type: "LeftBrace"})) {
+			return statement, errors.New("expecting '{' after else")
+		}
+
+		log.Printf("looking for else statements")
+		elseBlock, err := p.BlockStatement()
+		if err != nil {
+			return statement, err
+		}
+		statement.ElseStatements = elseBlock.Statements
+	}
+
+	return statement, nil
+}
+
+func (p *Parser) ForStatement() (*Statement, error) {
+	statement := &Statement{
+		Type: tokens.TokenType{Type: "For"},
+	}
+	if !(p.match(tokens.TokenType{Type: "LeftBrace"})) {
+		return statement, errors.New("expecting '{' after for")
+	}
+	block, err := p.BlockStatement()
+	log.Printf("block %v", block)
+	if err != nil {
+		return statement, err
+	}
+	statement.Statements = block.Statements
+	return statement, nil
 }
 
 func (p *Parser) PrintStatement() (*Statement, error) {
@@ -39,6 +106,7 @@ func (p *Parser) BlockStatement() (*Statement, error) {
 		if err != nil {
 			return statement, err
 		}
+		log.Printf("new statement: %v", statement)
 		statements = append(statements, statement)
 		next := p.Tokens[p.Current]
 		if next.Type.Type == "EOF" || next.Type.Type == "RightBrace" {

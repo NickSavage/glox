@@ -6,8 +6,10 @@ import (
 )
 
 type Interpreter struct {
-	Expression *parser.Expression
-	Memory     *Storage
+	Expression     *parser.Expression
+	Memory         *Storage
+	InLoop         bool
+	BreakTriggered bool
 }
 
 type RuntimeError struct {

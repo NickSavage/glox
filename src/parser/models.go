@@ -3,12 +3,14 @@ package parser
 import "github.com/NickSavage/glox/src/tokens"
 
 type Statement struct {
-	Type         tokens.TokenType
-	Expression   *Expression
-	VariableName tokens.Token
-	Initializer  *Expression
-	Statements   []*Statement
-	IsBlock      bool
+	Type           tokens.TokenType
+	Expression     *Expression
+	VariableName   tokens.Token
+	Initializer    *Expression
+	Statements     []*Statement
+	IsBlock        bool
+	Condition      *Expression
+	ElseStatements []*Statement
 }
 
 type Expression struct {
