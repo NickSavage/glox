@@ -126,7 +126,7 @@ func (i *Interpreter) Execute(statement *parser.Statement) RuntimeError {
 		}
 	case "Function":
 		i.Memory.Define(statement.FunctionName.Lexeme, statement)
-		log.Printf("memory", i.Memory.Memory)
+		log.Printf("memory %v", i.Memory.Memory)
 	case "Print":
 		result, rerr := i.Evaluate(statement.Expression)
 		if rerr.HasError {

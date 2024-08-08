@@ -29,6 +29,14 @@ func (i *Interpreter) FunctionCall(expr *parser.Expression, arguments []interfac
 		s = statement
 	}
 	log.Printf("statement %v", s)
+	previous := i.Memory
+	i.Memory = &Storage{
+		Memory:       make(map[string]interface{}),
+		Enclosing:    previous,
+		HasEnclosing: true,
+	}
+	i.executeBlock(s)
+	i.Memory = previous
 
 	return nil, RuntimeError{}
 }
