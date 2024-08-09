@@ -62,6 +62,10 @@ func (p *Parser) Lambda() (*Expression, error) {
 			Parameters: parameters,
 			Statements: statements,
 		}
+
+		// backing up, without this the lambda needs two ;
+		p.Current--
+
 		return &Expression{
 			Type:   "Lambda",
 			Lambda: lambda,
