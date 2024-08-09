@@ -52,7 +52,13 @@ func (p *Parser) Lambda() (*Expression, error) {
 		if !(p.match(tokens.TokenType{Type: "Colon"})) {
 			return &Expression{}, errors.New("expecting ':' in lambda")
 		}
-		statement, err := p.Statement()
+
+		var statement *Statement
+		if p.match(tokens.TokenType{Type: "LeftBrace"}) {
+			statement, err = p.BlockStatement()
+		} else {
+			statement, err = p.ReturnStatement()
+		}
 		if err != nil {
 			return &Expression{}, err
 		}
