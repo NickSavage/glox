@@ -182,6 +182,8 @@ func (i *Interpreter) Evaluate(expr *parser.Expression) (interface{}, RuntimeErr
 		return i.evaluateVariable(expr)
 	case "Logical":
 		return i.evaluateLogical(expr)
+	case "Lambda":
+		return i.evaluateLambda(expr)
 	default:
 		return nil, RuntimeError{
 			Message:  fmt.Errorf("unknown expression type %v", expr.Type),
@@ -304,23 +306,6 @@ func (i *Interpreter) evaluateUnary(expr *parser.Expression) (interface{}, Runti
 		HasError: true,
 		Token:    expr.Operator,
 	}
-}
-
-func (i *Interpreter) evaluateFunctionCall(expr *parser.Expression) (interface{}, RuntimeError) {
-	arguments := make([]interface{}, 0)
-	for _, a := range expr.Arguments {
-		argument, rerr := i.Evaluate(a)
-		if rerr.HasError {
-			return nil, rerr
-		}
-		arguments = append(arguments, argument)
-	}
-	results, rerr := i.FunctionCall(expr, arguments)
-	if rerr.HasError {
-		return nil, rerr
-	}
-	return results, RuntimeError{}
-
 }
 
 func (i *Interpreter) convertInterfaceNumber(literal interface{}) (float64, string, error) {

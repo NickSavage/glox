@@ -28,6 +28,7 @@ type Expression struct {
 	Arguments     []*Expression
 	FunctionName  tokens.Token
 	FunctionParen tokens.Token
+	Lambda        *Statement
 }
 
 type Parser struct {

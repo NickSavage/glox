@@ -11,7 +11,7 @@ func (p *Parser) Expression() (*Expression, error) {
 }
 
 func (p *Parser) Assignment() (*Expression, error) {
-	expr, err := p.Or()
+	expr, err := p.Lambda()
 	//	return expr, err
 
 	if p.match(tokens.TokenType{Type: "Equal"}) {
@@ -24,6 +24,47 @@ func (p *Parser) Assignment() (*Expression, error) {
 			Type:        "Assignment",
 			Name:        expr.Name,
 			AssignValue: value,
+		}, nil
+
+	}
+	return expr, err
+}
+
+func (p *Parser) Lambda() (*Expression, error) {
+	expr, err := p.Or()
+	if p.match(tokens.TokenType{Type: "Lambda"}) {
+		parameters := make([]tokens.Token, 0)
+		for {
+			token := p.Tokens[p.Current]
+			if token.Type.Type != "Identifier" {
+				return &Expression{}, errors.New("Expecting parameter name")
+			}
+			parameters = append(parameters, token)
+			p.Current++
+			if p.Tokens[p.Current].Type.Type == "Colon" {
+				break
+			}
+			if !p.match(tokens.TokenType{Type: "Comma"}) {
+				return &Expression{}, errors.New("Expecting , after parameter name")
+			}
+
+		}
+		if !(p.match(tokens.TokenType{Type: "Colon"})) {
+			return &Expression{}, errors.New("expecting ':' in lambda")
+		}
+		statement, err := p.Statement()
+		if err != nil {
+			return &Expression{}, err
+		}
+		statements := make([]*Statement, 0)
+		statements = append(statements, statement)
+		lambda := &Statement{
+			Parameters: parameters,
+			Statements: statements,
+		}
+		return &Expression{
+			Type:   "Lambda",
+			Lambda: lambda,
 		}, nil
 
 	}

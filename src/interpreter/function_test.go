@@ -150,3 +150,34 @@ func TestFunctionWrongNumberArguments(t *testing.T) {
 	}
 
 }
+func TestLambdaFunction(t *testing.T) {
+	memory := &Storage{
+		Memory: make(map[string]interface{}),
+	}
+
+	text := "var a = 1; var b = lambda x: return x + 1;; a = b(5);"
+	declarations, err := parseDeclarations(t, text)
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	i := Interpreter{
+		Expression: declarations[0].Expression,
+		Memory:     memory,
+	}
+	for _, declaration := range declarations {
+		i.Expression = declaration.Expression
+		rerr := i.Execute(declaration)
+		if rerr.HasError {
+			t.Errorf(rerr.Message.Error())
+		}
+	}
+	result, err := i.Memory.Get("a")
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	expected := 6
+	if result != expected {
+		t.Errorf("wrong result, got %v want %v", result, expected)
+	}
+
+}

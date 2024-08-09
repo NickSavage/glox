@@ -23,6 +23,22 @@ func (i *Interpreter) executeReturn(statement *parser.Statement) RuntimeError {
 	}
 
 }
+func (i *Interpreter) evaluateFunctionCall(expr *parser.Expression) (interface{}, RuntimeError) {
+	arguments := make([]interface{}, 0)
+	for _, a := range expr.Arguments {
+		argument, rerr := i.Evaluate(a)
+		if rerr.HasError {
+			return nil, rerr
+		}
+		arguments = append(arguments, argument)
+	}
+	results, rerr := i.FunctionCall(expr, arguments)
+	if rerr.HasError {
+		return nil, rerr
+	}
+	return results, RuntimeError{}
+
+}
 
 func (i *Interpreter) FunctionCall(expr *parser.Expression, arguments []interface{}) (interface{}, RuntimeError) {
 	statement, err := i.Memory.Get(expr.FunctionName.Lexeme)
@@ -69,4 +85,8 @@ func (i *Interpreter) FunctionCall(expr *parser.Expression, arguments []interfac
 	}
 
 	return nil, RuntimeError{}
+}
+
+func (i *Interpreter) evaluateLambda(expr *parser.Expression) (interface{}, RuntimeError) {
+	return expr.Lambda, RuntimeError{}
 }

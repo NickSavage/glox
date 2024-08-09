@@ -99,6 +99,15 @@ func SemicolonToken(line int) Token {
 	}
 }
 
+func ColonToken(line int) Token {
+	return Token{
+		Type:    TokenType{Type: "Colon"},
+		Lexeme:  ":",
+		Literal: nil,
+		Line:    line,
+	}
+}
+
 func StarToken(line int) Token {
 	return Token{
 		Type:    TokenType{Type: "Star"},

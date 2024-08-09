@@ -138,6 +138,7 @@ func (p *Parser) ExpressionStatement() (*Statement, error) {
 		return &Statement{}, err
 	}
 	if !(p.match(tokens.TokenType{Type: "Semicolon"})) {
+		log.Printf("expr %v", expr)
 		return &Statement{}, errors.New("expecting ';' after expression")
 	}
 	return &Statement{

@@ -17,6 +17,7 @@ var keywords = map[string]TokenType{
 	"for":      TokenType{Type: "For"},
 	"func":     TokenType{Type: "Function"},
 	"if":       TokenType{Type: "If"},
+	"lambda":   TokenType{Type: "Lambda"},
 	"nil":      TokenType{Type: "Nil"},
 	"or":       TokenType{Type: "Or"},
 	"print":    TokenType{Type: "Print"},
@@ -181,6 +182,8 @@ func (s *Scanner) ScanTokens() error {
 			s.Tokens = append(s.Tokens, PlusToken(s.line))
 		case ';':
 			s.Tokens = append(s.Tokens, SemicolonToken(s.line))
+		case ':':
+			s.Tokens = append(s.Tokens, ColonToken(s.line))
 		case '*':
 			s.Tokens = append(s.Tokens, StarToken(s.line))
 		case '!':
