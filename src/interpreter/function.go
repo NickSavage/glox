@@ -50,14 +50,13 @@ func (i *Interpreter) FunctionCall(expr *parser.Expression, arguments []interfac
 		}
 	}
 	var s *parser.Statement
-	if statement, ok := statement.(*parser.Statement); !ok {
+	s, ok := statement.(*parser.Statement)
+	if !ok {
 		return nil, RuntimeError{
 			Message:  fmt.Errorf("expected a statement but got: %T", statement),
 			HasError: true,
 			Token:    expr.Name,
 		}
-	} else {
-		s = statement
 	}
 	if len(s.Parameters) != len(arguments) {
 		return nil, RuntimeError{
@@ -74,6 +73,9 @@ func (i *Interpreter) FunctionCall(expr *parser.Expression, arguments []interfac
 	}
 	for index, _ := range arguments {
 		i.Memory.Define(s.Parameters[index].Lexeme, arguments[index])
+	}
+	if s.Type.Type == "NativeFunction" {
+		s.NativeFunction()
 	}
 	rerr := i.executeBlock(s)
 	i.Memory = previous

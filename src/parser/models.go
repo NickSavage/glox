@@ -13,7 +13,7 @@ type Statement struct {
 	Condition      *Expression
 	ElseStatements []*Statement
 	Parameters     []tokens.Token
-	NativeFunction func(arg ...interface{}) (result interface{}, err error)
+	NativeFunction func() (result interface{}, err error)
 }
 
 type Expression struct {
