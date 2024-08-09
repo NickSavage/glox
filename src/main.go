@@ -46,8 +46,7 @@ func run(source string) error {
 	i := interpreter.Interpreter{
 		Memory: Memory,
 	}
-	i.Memory.Define("print", i.PrintFunction())
-	i.Memory.Define("exit", i.ExitFunction())
+	i.LoadNativeFunctions()
 	for _, declaration := range declarations {
 
 		rerr := i.Execute(declaration)

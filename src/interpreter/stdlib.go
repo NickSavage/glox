@@ -9,6 +9,11 @@ import (
 	"github.com/NickSavage/glox/src/tokens"
 )
 
+func (i *Interpreter) LoadNativeFunctions() {
+	i.Memory.Define("print", i.PrintFunction())
+	i.Memory.Define("exit", i.ExitFunction())
+}
+
 func identifierToken(name string) tokens.Token {
 	return tokens.Token{
 		Type:    tokens.TokenType{Type: "Identifier"},

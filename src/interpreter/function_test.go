@@ -181,3 +181,27 @@ func TestLambdaFunction(t *testing.T) {
 	}
 
 }
+func TestNativePrintFunction(t *testing.T) {
+	memory := &Storage{
+		Memory: make(map[string]interface{}),
+	}
+
+	text := "print(1);"
+	declarations, err := parseDeclarations(t, text)
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	i := Interpreter{
+		Expression: declarations[0].Expression,
+		Memory:     memory,
+	}
+	i.LoadNativeFunctions()
+	for _, declaration := range declarations {
+		i.Expression = declaration.Expression
+		rerr := i.Execute(declaration)
+		if rerr.HasError {
+			t.Errorf(rerr.Message.Error())
+		}
+	}
+
+}
