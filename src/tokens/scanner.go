@@ -20,7 +20,6 @@ var keywords = map[string]TokenType{
 	"lambda":   TokenType{Type: "Lambda"},
 	"nil":      TokenType{Type: "Nil"},
 	"or":       TokenType{Type: "Or"},
-	"print":    TokenType{Type: "Print"},
 	"return":   TokenType{Type: "Return"},
 	"super":    TokenType{Type: "Super"},
 	"this":     TokenType{Type: "This"},

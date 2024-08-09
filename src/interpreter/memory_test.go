@@ -130,7 +130,7 @@ func TestLocalVarAssigment(t *testing.T) {
 		Memory: make(map[string]interface{}),
 	}
 
-	text := " var a = 1; var b = 2; { var a = 2; a = 3; print b;}"
+	text := " var a = 1; var b = 2; { var a = 2; a = 3; return b;}"
 	declarations, err := parseDeclarations(t, text)
 	if err != nil {
 		t.Errorf(err.Error())

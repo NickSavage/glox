@@ -7,7 +7,7 @@ import (
 )
 
 func TestParseStatements(t *testing.T) {
-	p, err := makeParser("print 1; print 2; print 3;")
+	p, err := makeParser("return 1; return 2; return 3;")
 	if err != nil {
 		t.Errorf(err.Error())
 	}
@@ -23,7 +23,7 @@ func TestParseStatements(t *testing.T) {
 }
 
 func TestParseStatementString(t *testing.T) {
-	p, err := makeParser("print 'hello world';")
+	p, err := makeParser("return 'hello world';")
 	if err != nil {
 		t.Errorf(err.Error())
 	}
@@ -102,7 +102,7 @@ func TestParseIfElseStatement(t *testing.T) {
 }
 
 func TestParseFunctionStatement(t *testing.T) {
-	p, err := makeParser("func hello(hi) { print hi; }")
+	p, err := makeParser("func hello(hi) { return hi; }")
 	if err != nil {
 		t.Errorf(err.Error())
 	}

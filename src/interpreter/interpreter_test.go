@@ -135,7 +135,7 @@ func TestInterpretDivideZeroEquality(t *testing.T) {
 }
 
 func TestInterpretVariables(t *testing.T) {
-	text := "var a = 1 + 1; print a;"
+	text := "var a = 1 + 1; return a;"
 	declarations, err := parseDeclarations(t, text)
 	if err != nil {
 		t.Errorf(err.Error())

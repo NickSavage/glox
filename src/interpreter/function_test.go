@@ -12,7 +12,7 @@ func TestDefineFunctionNoParameters(t *testing.T) {
 		Memory: make(map[string]interface{}),
 	}
 
-	text := "func hello() { print 2 + 2;}"
+	text := "func hello() { return 2 + 2;}"
 	declarations, err := parseDeclarations(t, text)
 	if err != nil {
 		t.Errorf(err.Error())

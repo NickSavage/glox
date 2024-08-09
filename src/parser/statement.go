@@ -24,9 +24,6 @@ func (p *Parser) Statement() (*Statement, error) {
 	if p.match(tokens.TokenType{Type: "Function"}) {
 		return p.FunctionStatement()
 	}
-	if p.match(tokens.TokenType{Type: "Print"}) {
-		return p.PrintStatement()
-	}
 	if p.match(tokens.TokenType{Type: "LeftBrace"}) {
 		return p.BlockStatement()
 	}
@@ -94,17 +91,6 @@ func (p *Parser) ForStatement() (*Statement, error) {
 	}
 	statement.Statements = block.Statements
 	return statement, nil
-}
-
-func (p *Parser) PrintStatement() (*Statement, error) {
-	expr, err := p.Expression()
-	if !(p.match(tokens.TokenType{Type: "Semicolon"})) {
-		return &Statement{}, errors.New("expecting ';' after expression")
-	}
-	return &Statement{
-		Type:       tokens.TokenType{Type: "Print"},
-		Expression: expr,
-	}, err
 }
 
 func (p *Parser) BlockStatement() (*Statement, error) {
