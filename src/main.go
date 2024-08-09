@@ -10,6 +10,7 @@ import (
 
 	"github.com/NickSavage/glox/src/interpreter"
 	"github.com/NickSavage/glox/src/parser"
+	"github.com/NickSavage/glox/src/stdlib"
 	"github.com/NickSavage/glox/src/tokens"
 )
 
@@ -46,6 +47,7 @@ func run(source string) error {
 	i := interpreter.Interpreter{
 		Memory: Memory,
 	}
+	i.Memory.Define("print", stdlib.PrintFunction)
 	for _, declaration := range declarations {
 
 		rerr := i.Execute(declaration)
