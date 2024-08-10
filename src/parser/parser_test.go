@@ -292,3 +292,44 @@ func TestParseFunctionCall(t *testing.T) {
 
 	}
 }
+
+func TestParseArray(t *testing.T) {
+	p, err := makeParser("[1,2,3,4]")
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	expr, err := p.Expression()
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	if expr.Type != "Array" {
+		t.Errorf("unexpected expression, got %v want Array", expr.Type)
+	}
+	if expr.Array.Length != 4 {
+		t.Errorf("wrong length, got %v want %v", expr.Array.Length, 4)
+	}
+	if expr.Array.Elements[0].Literal != 1 {
+		t.Errorf("wrong element, got %v want %v", expr.Array.Length, 1)
+
+	}
+}
+
+func TestParseArrayElement(t *testing.T) {
+	p, err := makeParser("a[1]")
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	expr, err := p.Expression()
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	if expr.Type != "Element" {
+		t.Errorf("unexpected expression, got %v want Element", expr.Type)
+	}
+	if expr.Index != 1 {
+		t.Errorf("wrong index, got %v want %v", expr.Array.Length, 4)
+	}
+	if expr.Name.Lexeme != "a" {
+		t.Errorf("wrong name, got %v want %v", expr.Name, "a")
+	}
+}

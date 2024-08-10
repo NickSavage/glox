@@ -184,6 +184,10 @@ func (i *Interpreter) Evaluate(expr *parser.Expression) (interface{}, RuntimeErr
 		return i.evaluateLogical(expr)
 	case "Lambda":
 		return i.evaluateLambda(expr)
+	case "Array":
+		return i.evaluateArray(expr)
+	case "Element":
+		return i.evaluateElement(expr)
 	default:
 		return nil, RuntimeError{
 			Message:  fmt.Errorf("unknown expression type %v", expr.Type),
@@ -191,6 +195,35 @@ func (i *Interpreter) Evaluate(expr *parser.Expression) (interface{}, RuntimeErr
 			Token:    expr.Operator,
 		}
 	}
+}
+
+func (i *Interpreter) evaluateArray(expr *parser.Expression) (interface{}, RuntimeError) {
+	return expr.Array, RuntimeError{HasError: false}
+
+}
+
+func (i *Interpreter) evaluateElement(expr *parser.Expression) (interface{}, RuntimeError) {
+	result, err := i.Memory.Get(expr.Name.Lexeme)
+	if err != nil {
+		return nil, RuntimeError{
+			Message:  err,
+			HasError: true,
+			Token:    expr.Name,
+		}
+
+	}
+	var array *parser.Array
+	array, ok := result.(*parser.Array)
+	if !ok {
+		return nil, RuntimeError{
+			Message:  fmt.Errorf("tried to index a non-array, %v", expr.Name.Lexeme),
+			HasError: true,
+			Token:    expr.Name,
+		}
+	}
+
+	element := array.Elements[expr.Index].Literal
+	return element, RuntimeError{}
 }
 
 func (i *Interpreter) evaluateVariable(expr *parser.Expression) (interface{}, RuntimeError) {

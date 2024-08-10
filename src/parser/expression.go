@@ -2,8 +2,10 @@ package parser
 
 import (
 	"errors"
-	"github.com/NickSavage/glox/src/tokens"
+	"fmt"
 	"log"
+
+	"github.com/NickSavage/glox/src/tokens"
 )
 
 func (p *Parser) Expression() (*Expression, error) {
@@ -293,7 +295,44 @@ func (p *Parser) Primary() (*Expression, error) {
 		return LiteralExpression(p.Tokens[p.Current-1]), nil
 	}
 	if p.match(tokens.TokenType{Type: "Identifier"}) {
-		return &Expression{Name: p.Tokens[p.Current-1], Type: "Variable"}, nil
+		name := p.Tokens[p.Current-1]
+		if p.match(tokens.TokenType{Type: "LeftBracket"}) {
+
+			token := p.Tokens[p.Current]
+			if token.Type.Type != "Number" {
+				return &Expression{}, fmt.Errorf("arrays can only be indexed by numbers, not %v", token.Type.Type)
+			}
+			p.Current++
+			if !p.match(tokens.TokenType{Type: "RightBracket"}) {
+				return &Expression{}, errors.New("Expecting ] after array element")
+			}
+			return &Expression{
+				Name:  name,
+				Index: token.Literal.(int),
+				Type:  "Element",
+			}, nil
+
+		}
+		return &Expression{Name: name, Type: "Variable"}, nil
+	}
+	if p.match(tokens.TokenType{Type: "LeftBracket"}) {
+		elements := make([]tokens.Token, 0)
+		for {
+			token := p.Tokens[p.Current]
+			elements = append(elements, token)
+			p.Current++
+			if p.match(tokens.TokenType{Type: "RightBracket"}) {
+				break
+			}
+			if !p.match(tokens.TokenType{Type: "Comma"}) {
+				return &Expression{}, errors.New("Expecting , after array element")
+			}
+		}
+		array := Array{
+			Elements: elements,
+			Length:   len(elements),
+		}
+		return &Expression{Type: "Array", Array: &array}, nil
 	}
 
 	// TODO: add expression()

@@ -30,8 +30,14 @@ type Expression struct {
 	FunctionName  tokens.Token
 	FunctionParen tokens.Token
 	Lambda        *Statement
+	Array         *Array
+	Index         int
 }
 
+type Array struct {
+	Elements []tokens.Token
+	Length   int
+}
 type Parser struct {
 	Tokens  []tokens.Token
 	Current int

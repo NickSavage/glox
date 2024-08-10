@@ -20,6 +20,23 @@ func EOFToken(line int) Token {
 	}
 }
 
+func LeftBracketToken(line int) Token {
+	return Token{
+		Type:    TokenType{Type: "LeftBracket"},
+		Lexeme:  "[",
+		Literal: nil,
+		Line:    line,
+	}
+}
+
+func RightBracketToken(line int) Token {
+	return Token{
+		Type:    TokenType{Type: "RightBracket"},
+		Lexeme:  "]",
+		Literal: nil,
+		Line:    line,
+	}
+}
 func LeftParenToken(line int) Token {
 	return Token{
 		Type:    TokenType{Type: "LeftParen"},

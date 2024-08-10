@@ -1,8 +1,7 @@
-func b() {
-    return 5;
-}
+
+
 func main() {
-    var a = lambda x: return b() * 2;;
-    print a(2);
+    var a = lambda x: x * 2;
+    print(a(a(2)));
 }
 main();

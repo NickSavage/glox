@@ -2,7 +2,7 @@ package parser
 
 import (
 	"errors"
-	//	"log"
+	"log"
 
 	"github.com/NickSavage/glox/src/tokens"
 )
@@ -56,6 +56,7 @@ func (p *Parser) Parse() ([]*Statement, error) {
 	for {
 		statement, err := p.Declaration()
 		if err != nil {
+			log.Printf("?")
 			return statements, err
 		}
 		statements = append(statements, statement)

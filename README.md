@@ -8,3 +8,4 @@ The purpose of this project is a learning project, both for how interpreters wor
 This has made a number of different design chocies, compared to the original interpreter. `glox` includes the following:
 - Lambda Functions
 - Go-style `for` loops, with `break` and `continue`
+- Arrays

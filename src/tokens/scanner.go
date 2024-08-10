@@ -163,6 +163,10 @@ func (s *Scanner) ScanTokens() error {
 		c = rune(s.Source[s.current])
 
 		switch c {
+		case '[':
+			s.Tokens = append(s.Tokens, LeftBracketToken(s.line))
+		case ']':
+			s.Tokens = append(s.Tokens, RightBracketToken(s.line))
 		case '(':
 			s.Tokens = append(s.Tokens, LeftParenToken(s.line))
 		case ')':
