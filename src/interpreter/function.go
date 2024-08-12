@@ -6,7 +6,7 @@ import (
 	"log"
 
 	"github.com/NickSavage/glox/src/parser"
-	//	"github.com/NickSavage/glox/src/tokens"
+		"github.com/NickSavage/glox/src/tokens"
 )
 
 func (i *Interpreter) executeReturn(statement *parser.Statement) RuntimeError {
@@ -74,10 +74,13 @@ func (i *Interpreter) FunctionCall(expr *parser.Expression, arguments []interfac
 	for index, _ := range arguments {
 		i.Memory.Define(s.Parameters[index].Lexeme, arguments[index])
 	}
+	var rerr RuntimeError
 	if s.Type.Type == "NativeFunction" {
-		s.NativeFunction()
+		log.Printf("s %v", s)
+		rerr = i.executeNativeFunction(s.NativeFunction)
+	} else {
+		rerr = i.executeBlock(s)
 	}
-	rerr := i.executeBlock(s)
 	i.Memory = previous
 	if rerr.HasError {
 		return nil, rerr
@@ -87,6 +90,23 @@ func (i *Interpreter) FunctionCall(expr *parser.Expression, arguments []interfac
 	}
 
 	return nil, RuntimeError{}
+}
+
+func (i *Interpreter) executeNativeFunction(nativeFunction func()(result interface{}, err error)) RuntimeError {
+	result, err := nativeFunction()
+	if err != nil {
+		return RuntimeError{
+			HasError: true,
+			Token:    tokens.Token{},
+			Message:  err,
+		}
+	}
+	return RuntimeError{
+		HasError:    false,
+		ReturnValue: result,
+		Return: true,
+	}
+
 }
 
 func (i *Interpreter) evaluateLambda(expr *parser.Expression) (interface{}, RuntimeError) {

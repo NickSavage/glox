@@ -136,7 +136,7 @@ func TestLocalVarAssigment(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 	if len(declarations) != 3 {
-		t.Errorf("wrong number of declarations, got %v want %v", len(declarations), 2)
+		t.Errorf("wrong number of declarations, got %v want %v", len(declarations), 3)
 	}
 	i := Interpreter{
 		Expression: declarations[0].Expression,

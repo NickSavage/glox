@@ -1,8 +1,9 @@
 package interpreter
 
 import (
+//	"errors"
 	"fmt"
-	//	"log"
+	"log"
 	"os"
 
 	"github.com/NickSavage/glox/src/parser"
@@ -10,8 +11,9 @@ import (
 )
 
 func (i *Interpreter) LoadNativeFunctions() {
-	i.Memory.Define("print", i.PrintFunction())
 	i.Memory.Define("exit", i.ExitFunction())
+	i.Memory.Define("len", i.LenFunction())
+	i.Memory.Define("print", i.PrintFunction())
 }
 
 func identifierToken(name string) tokens.Token {
@@ -57,4 +59,31 @@ func (i *Interpreter) ExitFunction() *parser.Statement {
 func (i *Interpreter) exitImplementation() (interface{}, error) {
 	os.Exit(0)
 	return nil, nil
+}
+
+func (i *Interpreter) LenFunction() *parser.Statement {
+	result := &parser.Statement{
+		Type:         tokens.TokenType{Type: "NativeFunction"},
+		FunctionName: identifierToken("len"),
+		Parameters: []tokens.Token{
+			identifierToken("array"),
+		},
+		NativeFunction: i.lenImplementation,
+	}
+	return result
+}
+
+func (i *Interpreter) lenImplementation() (interface{}, error) {
+	array, err := i.Memory.Get("array")
+	log.Printf("input")
+	if err != nil {
+		return nil, err
+	}
+	a, ok := array.(*parser.Array)
+	if !ok {
+		log.Printf("error")
+		return nil, fmt.Errorf("value is not an array")
+	}
+	log.Printf("a %v", a)
+	return a.Length, nil
 }
