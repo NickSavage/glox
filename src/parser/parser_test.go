@@ -333,3 +333,27 @@ func TestParseArrayElement(t *testing.T) {
 		t.Errorf("wrong name, got %v want %v", expr.Name, "a")
 	}
 }
+
+func TestParseConcat(t *testing.T) {
+	p, err := makeParser("'a' ~ 'a'")
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	expr, err := p.Comparison()
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	log.Printf("expr %v", expr)
+	if expr.Type != "Binary" {
+		t.Errorf("unexpected expression, got %v want Unary", expr.Type)
+	}
+	if !(expr.Operator.Type.Type == "Tilde") {
+		t.Errorf("unexpected operator, got %v want Greater", expr.Operator.Type.Type)
+	}
+	if !(expr.Right.Type == "Literal") {
+		t.Errorf("unexpected expression, got %v want Number", expr.Value.Type.Type)
+	}
+	if !(expr.Right.Type == "Literal") {
+		t.Errorf("unexpected expression, got %v want Number", expr.Value.Type.Type)
+	}
+}

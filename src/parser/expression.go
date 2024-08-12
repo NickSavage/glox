@@ -172,7 +172,7 @@ func (p *Parser) Term() (*Expression, error) {
 		return &Expression{}, err
 	}
 
-	if p.match(tokens.TokenType{Type: "Plus"}) || p.match(tokens.TokenType{Type: "Minus"}) {
+	if p.match(tokens.TokenType{Type: "Plus"}) || p.match(tokens.TokenType{Type: "Minus"}) || p.match(tokens.TokenType{Type: "Tilde"}) {
 		result.Operator = p.Tokens[p.Current-1]
 		result.Right, err = p.Factor()
 		if err != nil {

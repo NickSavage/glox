@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/NickSavage/glox/src/parser"
 	"github.com/NickSavage/glox/src/tokens"
@@ -354,6 +355,30 @@ func (i *Interpreter) convertInterfaceNumber(literal interface{}) (float64, stri
 	}
 }
 
+func (i *Interpreter) evaluateConcat(expr *parser.Expression, left, right interface{}) (interface{}, RuntimeError) {
+	a, ok := left.(string)
+	if !ok {
+		return nil, RuntimeError{
+			Message: fmt.Errorf("can only concatenate strings together, got %v", left),
+			HasError: true,
+			Token: expr.Left.Value,
+		}
+	}
+	b, ok := right.(string)
+	if !ok {
+		return nil, RuntimeError{
+			Message: fmt.Errorf("can only concatenate stings together, got %v", right),
+			HasError: true,
+			Token: expr.Right.Value,
+		}
+	}
+	var sb strings.Builder
+	sb.WriteString(a)
+	sb.WriteString(b)
+	log.Printf("%q, %q, %v",a, b, sb.String())
+	return sb.String(), RuntimeError{}
+}
+
 func (i *Interpreter) evaluateBinary(expr *parser.Expression) (interface{}, RuntimeError) {
 	var rerr RuntimeError
 	var err error
@@ -368,6 +393,9 @@ func (i *Interpreter) evaluateBinary(expr *parser.Expression) (interface{}, Runt
 
 	rerr = RuntimeError{
 		HasError: false,
+	}
+	if expr.Operator.Type == tokens.TildeToken(0).Type {
+		return i.evaluateConcat(expr, left, right)
 	}
 	leftNumber, leftType, err := i.convertInterfaceNumber(left)
 	if err != nil {

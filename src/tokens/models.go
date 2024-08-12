@@ -106,6 +106,14 @@ func PlusToken(line int) Token {
 		Line:    line,
 	}
 }
+func TildeToken(line int) Token {
+	return Token{
+		Type:    TokenType{Type: "Tilde"},
+		Lexeme:  "~",
+		Literal: nil,
+		Line:    line,
+	}
+}
 
 func SemicolonToken(line int) Token {
 	return Token{

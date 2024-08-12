@@ -183,6 +183,8 @@ func (s *Scanner) ScanTokens() error {
 			s.Tokens = append(s.Tokens, MinusToken(s.line))
 		case '+':
 			s.Tokens = append(s.Tokens, PlusToken(s.line))
+		case '~':
+			s.Tokens = append(s.Tokens, TildeToken(s.line))
 		case ';':
 			s.Tokens = append(s.Tokens, SemicolonToken(s.line))
 		case ':':

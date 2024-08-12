@@ -242,3 +242,35 @@ func TestLogicalStatement(t *testing.T) {
 	}
 
 }
+
+func TestConcatStrings(t *testing.T) {
+	memory := &Storage{
+		Memory: make(map[string]interface{}),
+	}
+	var i Interpreter
+
+	text := "var a = \"a\" ~ \"b\";"
+	declarations, err := parseDeclarations(t, text)
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	for _, declaration := range declarations {
+		i = Interpreter{
+			Expression: declaration.Expression,
+			Memory:     memory,
+		}
+		rerr := i.Execute(declaration)
+		if rerr.HasError {
+			t.Errorf(err.Error())
+		}
+	}
+
+	result, err := i.Memory.Get("a")
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	if result != "ab" {
+		t.Errorf("wrong result, got %v want %v", result, "ab")
+	}
+
+}
