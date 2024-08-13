@@ -103,7 +103,7 @@ func TestParserPrimaryNumberString(t *testing.T) {
 	if expr.Type != "Literal" {
 		t.Errorf("unexpected expression, got %v want Literal", expr.Type)
 	}
-	if !(expr.Value.Lexeme == "'hello world'") {
+	if !(expr.Value.Lexeme == "hello world") {
 		t.Errorf("unexpected expression, got %v want 1", expr.Value.Lexeme)
 	}
 	if !(expr.Value.Type.Type == "String") {

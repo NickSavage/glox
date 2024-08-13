@@ -70,7 +70,8 @@ func (s *Scanner) parseString(start int) (Token, error) {
 			s.line++
 		}
 		if next == rune(s.Source[start]) {
-			result = s.Source[start : current+2]
+			result = s.Source[start + 1 : current+1]
+			log.Printf("%s", result)
 			break
 		}
 
@@ -246,14 +247,14 @@ func (s *Scanner) ScanTokens() error {
 				return err
 			}
 			s.Tokens = append(s.Tokens, token)
-			s.current += len(token.Lexeme) - 1
+			s.current += len(token.Lexeme) +1
 		case '\'':
 			token, err := s.parseString(s.current)
 			if err != nil {
 				return err
 			}
 			s.Tokens = append(s.Tokens, token)
-			s.current += len(token.Lexeme) - 1
+			s.current += len(token.Lexeme) +1
 
 		default:
 			if isDigit(c) {
