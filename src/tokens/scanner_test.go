@@ -34,8 +34,8 @@ func TestScanSingleQuoteStrings(t *testing.T) {
 	if len(s.Tokens) != 3 {
 		t.Errorf("wrong number of tokens returned. got %v want %v", len(s.Tokens), 3)
 	}
-	if s.Tokens[0].Lexeme != "'hello world'" {
-		t.Errorf("wrong result, got %v want %v", s.Tokens[0].Lexeme, "'hello world'")
+	if s.Tokens[0].Lexeme != "hello world" {
+		t.Errorf("wrong result, got %v want %v", s.Tokens[0].Lexeme, "hello world")
 	}
 
 }
@@ -50,8 +50,8 @@ func TestScanDoubleQuoteStrings(t *testing.T) {
 	if len(s.Tokens) != 3 {
 		t.Errorf("wrong number of tokens returned. got %v want %v", len(s.Tokens), 3)
 	}
-	if s.Tokens[0].Lexeme != "\"hello world\"" {
-		t.Errorf("wrong result, got %v want %v", s.Tokens[0].Lexeme, "\"hello world\"")
+	if s.Tokens[0].Lexeme != "hello world" {
+		t.Errorf("wrong result, got %v want %v", s.Tokens[0].Lexeme, "hello world")
 	}
 
 }

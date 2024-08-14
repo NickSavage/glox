@@ -42,3 +42,9 @@ type Parser struct {
 	Tokens  []tokens.Token
 	Current int
 }
+
+type ParseError struct {
+	Message  error
+	HasError bool
+	Token    tokens.Token
+}

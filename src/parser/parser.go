@@ -54,10 +54,10 @@ func (p *Parser) match(tokenType tokens.TokenType) bool {
 func (p *Parser) Parse() ([]*Statement, error) {
 	statements := make([]*Statement, 0)
 	for {
-		statement, err := p.Declaration()
-		if err != nil {
-			log.Printf("?")
-			return statements, err
+		statement, perr := p.Declaration()
+		if perr.HasError {
+			log.Printf("token %v, line %v: %v", perr.Token, perr.Token.Line, perr.Message.Error())
+			return statements, perr.Message
 		}
 		statements = append(statements, statement)
 

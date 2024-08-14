@@ -56,13 +56,14 @@ func (p *Parser) Lambda() (*Expression, error) {
 		}
 
 		var statement *Statement
+		var perr ParseError
 		if p.match(tokens.TokenType{Type: "LeftBrace"}) {
-			statement, err = p.BlockStatement()
+			statement, perr = p.BlockStatement()
 		} else {
-			statement, err = p.ReturnStatement()
+			statement, perr = p.ReturnStatement()
 		}
-		if err != nil {
-			return &Expression{}, err
+		if perr.HasError {
+			return &Expression{}, perr.Message
 		}
 		statements := make([]*Statement, 0)
 		statements = append(statements, statement)
