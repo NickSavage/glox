@@ -1,22 +1,12 @@
 package stdlib
 
 import (
-	"errors"
 	"fmt"
 	"github.com/NickSavage/glox/src/interpreter"
 	"github.com/NickSavage/glox/src/parser"
 	"github.com/NickSavage/glox/src/tokens"
 	"log"
 )
-
-func identifierToken(name string) tokens.Token {
-	return tokens.Token{
-		Type:    tokens.TokenType{Type: "Identifier"},
-		Lexeme:  name,
-		Literal: nil,
-		Line:    0,
-	}
-}
 
 func LenFunction(i *interpreter.Interpreter) *parser.Statement {
 	result := &parser.Statement{
@@ -25,23 +15,18 @@ func LenFunction(i *interpreter.Interpreter) *parser.Statement {
 		Parameters: []tokens.Token{
 			identifierToken("array"),
 		},
-		NativeFunction: lenImplWrapper,
+		NativeFunction: lenImplementation,
 	}
 	return result
 }
 
-func lenImplWrapper(i interface{}) (interface{}, error) {
+func lenImplementation(i interface{}) (interface{}, error) {
 	in, ok := i.(*interpreter.Interpreter)
 
 	if !ok {
-		return nil, errors.New("sdasd")
+		return nil, implWrapperError()
 	}
-	return lenImplementation(in)
-
-}
-
-func lenImplementation(i *interpreter.Interpreter) (interface{}, error) {
-	array, err := i.Memory.Get("array")
+	array, err := in.Memory.Get("array")
 	log.Printf("input")
 	if err != nil {
 		return nil, err
