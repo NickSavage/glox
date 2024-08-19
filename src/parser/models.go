@@ -1,6 +1,8 @@
 package parser
 
-import "github.com/NickSavage/glox/src/tokens"
+import (
+	"github.com/NickSavage/glox/src/tokens"
+)
 
 type Statement struct {
 	Type           tokens.TokenType
@@ -13,7 +15,7 @@ type Statement struct {
 	Condition      *Expression
 	ElseStatements []*Statement
 	Parameters     []tokens.Token
-	NativeFunction func() (result interface{}, err error)
+	NativeFunction func(i interface{}) (result interface{}, err error) // interface must be interpreter
 }
 
 type Expression struct {

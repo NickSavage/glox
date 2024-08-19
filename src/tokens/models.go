@@ -220,3 +220,12 @@ func GreaterEqualToken(line int) Token {
 		Line:    line,
 	}
 }
+
+func IdentifierToken(name string) Token {
+	return Token{
+		Type:    TokenType{Type: "Identifier"},
+		Lexeme:  name,
+		Literal: nil,
+		Line:    0,
+	}
+}

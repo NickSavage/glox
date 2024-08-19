@@ -10,6 +10,7 @@ import (
 
 	"github.com/NickSavage/glox/src/interpreter"
 	"github.com/NickSavage/glox/src/parser"
+	"github.com/NickSavage/glox/src/stdlib"
 	"github.com/NickSavage/glox/src/tokens"
 )
 
@@ -21,6 +22,12 @@ func report(line int, where string, message string) {
 
 func printError(line int, message string) {
 	report(line, "", message)
+}
+
+func LoadNativeFunctions(i *interpreter.Interpreter) {
+	i.Memory.Define("exit", interpreter.ExitFunction(i))
+	i.Memory.Define("len", stdlib.LenFunction(i))
+	i.Memory.Define("print", interpreter.PrintFunction(i))
 }
 
 func run(source string) error {
@@ -46,7 +53,7 @@ func run(source string) error {
 	i := interpreter.Interpreter{
 		Memory: Memory,
 	}
-	i.LoadNativeFunctions()
+	LoadNativeFunctions(&i)
 	for _, declaration := range declarations {
 
 		rerr := i.Execute(declaration)

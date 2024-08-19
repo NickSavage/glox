@@ -6,7 +6,7 @@ import (
 	"log"
 
 	"github.com/NickSavage/glox/src/parser"
-		"github.com/NickSavage/glox/src/tokens"
+	"github.com/NickSavage/glox/src/tokens"
 )
 
 func (i *Interpreter) executeReturn(statement *parser.Statement) RuntimeError {
@@ -92,8 +92,8 @@ func (i *Interpreter) FunctionCall(expr *parser.Expression, arguments []interfac
 	return nil, RuntimeError{}
 }
 
-func (i *Interpreter) executeNativeFunction(nativeFunction func()(result interface{}, err error)) RuntimeError {
-	result, err := nativeFunction()
+func (i *Interpreter) executeNativeFunction(nativeFunction func(i interface{}) (result interface{}, err error)) RuntimeError {
+	result, err := nativeFunction(i)
 	if err != nil {
 		return RuntimeError{
 			HasError: true,
@@ -104,7 +104,7 @@ func (i *Interpreter) executeNativeFunction(nativeFunction func()(result interfa
 	return RuntimeError{
 		HasError:    false,
 		ReturnValue: result,
-		Return: true,
+		Return:      true,
 	}
 
 }
