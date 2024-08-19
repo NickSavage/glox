@@ -35,6 +35,7 @@ func (p *Parser) Assignment() (*Expression, error) {
 func (p *Parser) Lambda() (*Expression, error) {
 	expr, err := p.Or()
 	if p.match(tokens.TokenType{Type: "Lambda"}) {
+		log.Printf("lambda")
 		parameters := make([]tokens.Token, 0)
 		for {
 			token := p.Tokens[p.Current]
@@ -57,11 +58,8 @@ func (p *Parser) Lambda() (*Expression, error) {
 
 		var statement *Statement
 		var perr ParseError
-		if p.match(tokens.TokenType{Type: "LeftBrace"}) {
-			statement, perr = p.BlockStatement()
-		} else {
-			statement, perr = p.ReturnStatement()
-		}
+		// TODO check for parsing errors here, we need to prevent things like braces
+		statement, perr = p.ReturnStatement()
 		if perr.HasError {
 			return &Expression{}, perr.Message
 		}

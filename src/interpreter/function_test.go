@@ -187,7 +187,7 @@ func TestLambdaFunction(t *testing.T) {
 // 		Memory: make(map[string]interface{}),
 // 	}
 
-// 	text := "var a = 1;\n var b = lambda x: { var y = x * 2; return y; };\n a = b(5);"
+// 	text := "var a = 1;\n var b = lambda x: { \nvar y = x * 2; \nreturn y; \n};\n a = b(5);"
 // 	declarations, err := parseDeclarations(t, text)
 // 	if err != nil {
 // 		t.Errorf(err.Error())
